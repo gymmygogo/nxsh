@@ -1,0 +1,143 @@
+{
+	"pages": [
+		{
+			"path": "pages/index/index",
+			"style": {
+				"navigationBarTitleText": "暖夕守护",
+				"navigationBarBackgroundColor": "#FFFFFF"
+			}
+		},
+		{
+			"path": "pages/login/elderly-login",
+			"style": {
+				"navigationBarTitleText": "老人端登录",
+				"navigationBarBackgroundColor": "#FFF6F0"
+			}
+		},
+		{
+			"path": "pages/elderly/home",
+			"style": {
+				"navigationBarTitleText": "健康守护",
+				"navigationBarBackgroundColor": "#FFF6F0"
+			}
+		},
+		{
+			"path": "pages/login/family-login",
+			"style": {
+				"navigationBarTitleText": "家属端登录",
+				"navigationBarBackgroundColor": "#EDF4FF"
+			}
+		},
+		{
+			"path": "pages/family/settings",
+			"style": {
+				"navigationBarTitleText": "家属设置",
+				"navigationBarBackgroundColor": "#EDF4FF"
+			}
+		},
+		{
+			"path": "pages/login/family-register",
+			"style": {
+				"navigationBarTitleText": "家属端注册",
+				"navigationBarBackgroundColor": "#EDF4FF"
+			}
+		},
+		{
+			"path": "pages/login/elderly-register",
+			"style": {
+				"navigationBarTitleText": "老人端注册",
+				"navigationBarBackgroundColor": "#FFF6F0"
+			}
+		},
+		{
+			"path": "pages/elderly/blood-pressure",
+			"style": {
+				"navigationBarTitleText": "健康守护",
+				"navigationStyle": "custom",
+				"app-plus": {
+					"bounce": "none",
+					"titleNView": false
+				}
+			}
+		},
+		{
+			"path": "pages/family/medicine-dashboard",
+			"style": {
+				"navigationBarTitleText": "用药看板",
+				"navigationBarBackgroundColor": "#EDF4FF"
+			}
+		},
+		{
+			"path": "pages/family/add-medicine",
+			"style": {
+				"navigationBarTitleText": "添加药品",
+				"navigationBarBackgroundColor": "#EDF4FF"
+			}
+		},
+		{
+			"path": "pages/elderly/medicine-reminder",
+			"style": {
+				"navigationBarTitleText": "用药提醒",
+				"navigationStyle": "custom",
+				"app-plus": {
+					"bounce": "none",
+					"titleNView": false
+				}
+			}
+		},
+		{
+			"path": "pages/elderly/ai-care",
+			"style": {
+				"navigationBarTitleText": "暖心聊天",
+				"navigationBarBackgroundColor": "#FFF6F0"
+			}
+		},
+		{
+			"path": "pages/family/sos-log",
+			"style": {
+				"navigationBarTitleText": "求救记录",
+				"navigationBarBackgroundColor": "#EDF4FF"
+			}
+		},
+		{
+			"path": "pages/family/emergency-contact",
+			"style": {
+				"navigationBarTitleText": "紧急联系人",
+				"navigationBarBackgroundColor": "#EDF4FF"
+			}
+		},
+		{
+			"path": "pages/family/main",
+			"style": {
+				"navigationBarTitleText": "家属主界面",
+				"navigationStyle": "custom",
+				"app-plus": {
+					"bounce": "none",
+					"titleNView": false
+				}
+			}
+		},
+		{
+			"path": "pages/elderly/bp-reminder",
+			"style": {
+				"navigationBarTitleText": "血压提醒",
+				"navigationStyle": "custom",
+				"app-plus": {
+					"bounce": "none",
+					"titleNView": false
+				}
+			}
+		}
+	],
+	"globalStyle": {
+		"navigationBarTextStyle": "black",
+		"navigationBarTitleText": "暖夕守护",
+		"navigationBarBackgroundColor": "#F8F8F8",
+		"backgroundColor": "#F8F8F8",
+		"app-plus": {
+			"titleNView": {
+				"type": "default"
+			}
+		}
+	}
+}

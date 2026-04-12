@@ -1,0 +1,62 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: nxsh
+  data:
+    redis:
+      host: localhost       # Redis 服务器地址
+      port: 6380             # Redis 端口，默认是 6379
+      password:             # 如果你的 Redis 设置了密码，填在这里；没有就留空
+      database: 0           # 指定使用第 0 号数据库 (就是刚才建议的默认库)
+      timeout: 3000ms       # 连接超时时间
+  datasource:
+    url: jdbc:mysql://localhost:3308/nxsh?useUnicode=true&characterEncoding=utf-8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
+    username: root
+    password: gymmy666
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jackson:
+    time-zone: Asia/Shanghai
+    date-format: yyyy-MM-dd HH:mm:ss
+    serialization:
+      write-dates-as-timestamps: false
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 30MB
+
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    map-underscore-to-camel-case: true
+
+minio:
+  endpoint: http://localhost:9004        # Java 后端连接 MinIO 用（本机 Docker）
+  external-url: http://192.168.5.26:9004 # 生成的文件 URL 前缀（真机访问用局域网 IP）
+  access-key: minioadmin
+  secret-key: minioadmin
+  bucket: nxsh
+
+geo:
+  amap:
+    key: 9b35bbd9fcffb38b9ba627e1860421f2
+    url: https://restapi.amap.com/v3/geocode/regeo
+
+sms:
+  ihuyi:
+    account: C24972293
+    api-key: 541d7b2ac69bdeef521d34724d9ad461
+
+ai:
+  siliconflow:
+    api-key: sk-cgzbthstvtcchfkcjmdglnanmgnckzsnvtrrlhooiqczwfxv
+    api-url: https://api.siliconflow.cn/v1/chat/completions
+    model: Qwen/Qwen3-235B-A22B-Instruct-2507
+    stt-api-key: sk-cgzbthstvtcchfkcjmdglnanmgnckzsnvtrrlhooiqczwfxv
+    stt-api-url: https://api.siliconflow.cn/v1/audio/transcriptions
+    stt-model: FunAudioLLM/SenseVoiceSmall
+    tts-api-key: sk-cgzbthstvtcchfkcjmdglnanmgnckzsnvtrrlhooiqczwfxv
+    tts-api-url: https://api.siliconflow.cn/v1/audio/speech
+    tts-model: fnlp/MOSS-TTSD-v0.5
+    tts-voice: fnlp/MOSS-TTSD-v0.5:anna

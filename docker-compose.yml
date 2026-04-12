@@ -1,0 +1,59 @@
+version: '3.8'
+services:
+
+  # ==================== MySQL ====================
+  mysql:
+    image: mysql:8.0
+    container_name: nxsh_mysql
+    restart: unless-stopped
+    ports:
+      - "3308:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: gymmy666
+      MYSQL_DATABASE: family_elderly_bind
+      TZ: Asia/Shanghai
+    volumes:
+      - /Users/mingyi/mysqlspaces/nxsh:/var/lib/mysql
+      - ./family_elderly_bind.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-pgymmy666"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ==================== Redis ====================
+  redis:
+    image: redis:7.4.7
+    container_name: nxsh_redis
+    restart: unless-stopped
+    ports:
+      - "6380:6379"
+    command: redis-server --appendonly yes
+    volumes:
+      - /Users/mingyi/redisspace/nxsh/data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  # ==================== MinIO ====================
+  minio:
+    image: minio/minio:latest
+    container_name: nxsh_minio
+    restart: unless-stopped
+    ports:
+      - "9004:9000"   # S3 API 端口（Java 代码里填这个端口）
+      - "9005:9001"   # Web 管理控制台端口（浏览器访问用这个端口）
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    command: server /data --console-address ":9001"
+    volumes:
+      - /Users/mingyi/miniospace/nxsh/data:/data
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
