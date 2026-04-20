@@ -1,9 +1,9 @@
 <template>
   <view class="page">
     <view class="header">
-      <text class="header-emoji">📝</text>
+      <view class="header-mark"><text class="header-mark-t">注</text></view>
       <text class="header-title">家属端注册</text>
-      <text class="header-sub">加入暖夕，守护家人</text>
+      <text class="header-sub">创建家属账号</text>
     </view>
 
     <view class="form-card">
@@ -127,29 +127,33 @@ const register = () => {
 </script>
 
 <style scoped>
-.page { min-height: 100vh; background: linear-gradient(180deg, #E8F2FF 0%, #FFFFFF 40%); padding: 0 24px; }
-.header { padding-top: 50px; padding-bottom: 28px; display: flex; flex-direction: column; align-items: center; }
-.header-emoji { font-size: 40px; margin-bottom: 10px; }
-.header-title { font-size: 24px; font-weight: 800; color: #2D2D2D; margin-bottom: 4px; }
-.header-sub { font-size: 13px; color: #7A9BBF; }
-.form-card { background: #FFFFFF; border-radius: 20px; padding: 24px 20px; box-shadow: 0 4px 24px rgba(0,0,0,0.06); }
+.page { min-height: 100vh; background: #f0f1f3; padding: 0 24px; }
+.header { padding-top: 48px; padding-bottom: 24px; display: flex; flex-direction: column; align-items: center; }
+.header-mark {
+  width: 48px; height: 48px; border-radius: 12px; background: #fff; border: 1px solid #e6e8ec;
+  display: flex; align-items: center; justify-content: center; margin-bottom: 12px;
+}
+.header-mark-t { font-size: 18px; font-weight: 700; color: #1e4a72; }
+.header-title { font-size: 22px; font-weight: 600; color: #1a1d21; margin-bottom: 4px; }
+.header-sub { font-size: 13px; color: #6b7280; }
+.form-card { background: #ffffff; border-radius: 14px; padding: 24px 20px; border: 1px solid #e6e8ec; }
 .field { margin-bottom: 16px; }
-.field-label { font-size: 13px; font-weight: 600; color: #6B8CAA; display: block; margin-bottom: 6px; }
+.field-label { font-size: 13px; font-weight: 600; color: #6b7280; display: block; margin-bottom: 6px; }
 .field-input {
-  height: 48px; font-size: 16px; padding: 0 14px; color: #2D2D2D; caret-color: #5B9BD5;
-  background: #F5F9FF; border: 1px solid #DEE9F5; border-radius: 12px; -webkit-text-fill-color: #2D2D2D;
+  height: 48px; font-size: 16px; padding: 0 14px; color: #1a1d21; caret-color: #1e4a72;
+  background: #ffffff; border: 1px solid #e6e8ec; border-radius: 10px; -webkit-text-fill-color: #1a1d21;
 }
 .code-row { display: flex; align-items: center; gap: 10px; }
 .code-input { flex: 1; }
 .btn-code {
   flex-shrink: 0; width: 120px; height: 48px; line-height: 48px; font-size: 13px; font-weight: 600;
-  background: #E8F2FF; color: #5B9BD5; border-radius: 12px; border: 1px solid #DEE9F5; text-align: center; padding: 0;
+  background: #f4f6f9; color: #1e4a72; border-radius: 10px; border: 1px solid #d8dee6; text-align: center; padding: 0;
 }
-.btn-code[disabled] { color: #A0B8CF; background: #F5F9FF; }
+.btn-code[disabled] { color: #9ca3af; background: #f3f4f6; }
 .btn-register {
   width: 100%; height: 50px; line-height: 50px; margin-top: 8px;
-  background: linear-gradient(135deg, #6DB3F2 0%, #5B9BD5 100%); color: #fff;
-  font-size: 18px; font-weight: 700; border-radius: 14px; border: none;
-  box-shadow: 0 4px 16px rgba(91,155,213,0.3); letter-spacing: 4px;
+  background: #1e4a72; color: #fff;
+  font-size: 17px; font-weight: 600; border-radius: 10px; border: 1px solid #1e4a72;
+  box-shadow: none; letter-spacing: 2px;
 }
 </style>

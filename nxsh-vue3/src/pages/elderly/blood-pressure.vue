@@ -4,47 +4,61 @@
       <!-- 模块：血压记录 -->
       <view v-if="activeTab === 'bp'">
         <view class="page-header">
-          <text class="page-icon">❤️</text>
+          <view class="page-mark"><text class="page-mark-t">血</text></view>
           <view>
             <text class="page-title">血压记录</text>
-            <text class="page-sub">请按设备按键，或手动输入</text>
+            <text class="page-sub">先填写数值提交；设备与按键录入在下方展开</text>
           </view>
         </view>
 
-        <view class="card">
-          <text class="card-label">收缩压 SYS</text>
-          <input class="input-big" type="number" v-model="sys" placeholder="例如 120" />
-          <text class="card-label">舒张压 DIA</text>
-          <input class="input-big" type="number" v-model="dia" placeholder="例如 80" />
-          <button class="btn-primary" @click="submitManual">提交记录</button>
+        <view class="card card-bp-main">
+          <view class="sysdia-row">
+            <view class="sysdia-col">
+              <text class="sysdia-lbl">收缩压 SYS</text>
+              <input class="input-compact" type="number" v-model="sys" placeholder="120" />
+            </view>
+            <view class="sysdia-col">
+              <text class="sysdia-lbl">舒张压 DIA</text>
+              <input class="input-compact" type="number" v-model="dia" placeholder="80" />
+            </view>
+          </view>
+          <button class="btn-primary btn-submit-bp" @click="submitManual">提交记录</button>
         </view>
 
-        <!-- BLE 设备连接 -->
-        <view class="card">
-          <text class="card-label">蓝牙设备 (ESP32-C3)</text>
+        <view class="bp-action-btns">
+          <button class="btn-bp-extra" :class="{ 'btn-bp-extra-on': showBlePanel }" @click="toggleBlePanel">
+            {{ showBlePanel ? '收起蓝牙设备' : '蓝牙设备 (ESP32)' }}
+          </button>
+          <button class="btn-bp-extra" :class="{ 'btn-bp-extra-on': showQuickPanel }" @click="toggleQuickPanel">
+            {{ showQuickPanel ? '收起按键录入' : '按键快捷录入' }}
+          </button>
+        </view>
+
+        <view v-if="showBlePanel" class="card card-bp-extra">
+          <text class="card-label">蓝牙设备</text>
           <view class="ble-status">
             <text :class="['ble-dot', bleConnected ? 'ble-on' : 'ble-off']">●</text>
             <text class="ble-text">{{ bleStatusText }}</text>
           </view>
-          <button v-if="!bleConnected" class="btn-primary" @click="startBleScan">🔗 连接设备</button>
+          <button v-if="!bleConnected" class="btn-primary" @click="startBleScan">连接设备</button>
           <button v-else class="btn-secondary" @click="disconnectBle">断开连接</button>
         </view>
 
-        <view class="card">
+        <view v-if="showQuickPanel" class="card card-bp-extra">
           <text class="card-label">快捷录入</text>
-          <text class="card-sub">对应 ESP32 按键自动上报</text>
+          <text class="card-sub">模拟设备按键上报，真机请用实体键</text>
           <view class="btn-row">
             <view class="btn-quick-wrap">
               <button class="btn-quick btn-high" @click="submitByPress('SHORT')">偏高</button>
-              <text class="btn-hint">单击按键</text>
+              <text class="btn-hint">单击</text>
             </view>
             <view class="btn-quick-wrap">
               <button class="btn-quick btn-normal" @click="submitByPress('LONG')">正常</button>
-              <text class="btn-hint">长按按键</text>
+              <text class="btn-hint">长按</text>
             </view>
             <view class="btn-quick-wrap">
               <button class="btn-quick btn-low" @click="submitByPress('DOUBLE')">偏低</button>
-              <text class="btn-hint">双击按键</text>
+              <text class="btn-hint">双击</text>
             </view>
           </view>
         </view>
@@ -53,7 +67,7 @@
       <!-- 模块：用药提醒 -->
       <view v-if="activeTab === 'medicine'">
         <view class="page-header">
-          <text class="page-icon">💊</text>
+          <view class="page-mark"><text class="page-mark-t">药</text></view>
           <view>
             <text class="page-title">用药提醒</text>
             <text class="page-sub">到点提醒，按时服药</text>
@@ -63,7 +77,7 @@
         <view class="card">
           <button class="btn-primary" @click="loadDueMedicines">刷新提醒</button>
           <view v-if="dueGroups.length === 0" class="empty">
-            <text class="empty-icon">🎉</text>
+            <view class="empty-line" />
             <text class="empty-text">暂无需要服用的药品</text>
           </view>
           <view v-for="(group, idx) in dueGroups" :key="idx" class="due-card">
@@ -85,7 +99,7 @@
       <!-- 模块：走位防丢失 -->
       <view v-if="activeTab === 'safe'">
         <view class="page-header">
-          <text class="page-icon">📍</text>
+          <view class="page-mark"><text class="page-mark-t">守</text></view>
           <view>
             <text class="page-title">安全守护</text>
             <text class="page-sub">定位上报，紧急呼救</text>
@@ -94,12 +108,12 @@
 
         <view class="card">
           <button class="btn-primary" @click="reportActive">
-            <text>📡 上报当前位置</text>
+            <text>上报当前位置</text>
           </button>
         </view>
 
         <view class="sos-area">
-          <button class="btn-sos" @click="handleSOS">🆘 一键呼救</button>
+          <button class="btn-sos" @click="handleSOS">一键呼救</button>
           <text class="sos-tip">如遇危险请立即点击</text>
         </view>
       </view>
@@ -107,7 +121,7 @@
       <!-- 模块：我的 -->
       <view v-if="activeTab === 'me'">
         <view class="page-header">
-          <text class="page-icon">👤</text>
+          <view class="page-mark"><text class="page-mark-t">我</text></view>
           <view>
             <text class="page-title">我的</text>
             <text class="page-sub">账号信息</text>
@@ -129,7 +143,6 @@
     <!-- 预警提示全屏弹窗 -->
     <view v-if="resultVisible" class="result-mask">
       <view class="result-fullscreen" :class="resultClass">
-        <text class="result-emoji">{{ resultStatus === 1 ? '⚠️' : resultStatus === 2 ? '💙' : '✅' }}</text>
         <text class="result-label">血压状态</text>
         <text class="result-title">{{ resultText }}</text>
         <text v-if="resultValue" class="result-value">{{ resultValue }} mmHg</text>
@@ -141,23 +154,23 @@
     <!-- 底部 Tab -->
     <view class="tab-bar">
       <view class="tab-item" :class="tabClass('bp')" @click="setTab('bp')">
-        <text class="tab-icon">❤️</text>
+        <view class="tab-glyph-wrap"><text class="tab-glyph">血</text></view>
         <text class="tab-label">血压</text>
       </view>
       <view class="tab-item" :class="tabClass('medicine')" @click="setTab('medicine')">
-        <text class="tab-icon">💊</text>
+        <view class="tab-glyph-wrap"><text class="tab-glyph">药</text></view>
         <text class="tab-label">用药</text>
       </view>
       <view class="tab-item" :class="tabClass('ai')" @click="setTab('ai')">
-        <text class="tab-icon">💬</text>
+        <view class="tab-glyph-wrap"><text class="tab-glyph">聊</text></view>
         <text class="tab-label">聊天</text>
       </view>
       <view class="tab-item" :class="tabClass('safe')" @click="setTab('safe')">
-        <text class="tab-icon">📍</text>
+        <view class="tab-glyph-wrap"><text class="tab-glyph">守</text></view>
         <text class="tab-label">守护</text>
       </view>
       <view class="tab-item" :class="tabClass('me')" @click="setTab('me')">
-        <text class="tab-icon">👤</text>
+        <view class="tab-glyph-wrap"><text class="tab-glyph">我</text></view>
         <text class="tab-label">我的</text>
       </view>
     </view>
@@ -183,6 +196,19 @@ const elderlyNickname = ref(uni.getStorageSync('elderlyNickname') || '')
 
 const sys = ref('')
 const dia = ref('')
+
+const showBlePanel = ref(false)
+const showQuickPanel = ref(false)
+
+const toggleBlePanel = () => {
+  showBlePanel.value = !showBlePanel.value
+  if (showBlePanel.value) showQuickPanel.value = false
+}
+
+const toggleQuickPanel = () => {
+  showQuickPanel.value = !showQuickPanel.value
+  if (showQuickPanel.value) showBlePanel.value = false
+}
 
 const resultVisible = ref(false)
 const resultText = ref('')
@@ -412,6 +438,10 @@ const tabClass = (key) => (activeTab.value === key ? 'tab-active' : '')
 
 const setTab = (key) => {
   activeTab.value = key
+  if (key !== 'bp') {
+    showBlePanel.value = false
+    showQuickPanel.value = false
+  }
   if (key === 'medicine') {
     loadDueMedicines()
   }
@@ -655,32 +685,62 @@ const handleLogout = () => {
 </script>
 
 <style scoped>
-.page { min-height: 100vh; background: linear-gradient(180deg, #FFF6F0 0%, #FFFFFF 30%); }
+.page { min-height: 100vh; background: #f2f0ee; }
 .content { padding: 16px 16px 90px; }
 
 /* Page Header */
 .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; padding: 8px 0; }
-.page-icon { font-size: 32px; }
-.page-title { font-size: 24px; font-weight: 800; color: #2D2D2D; display: block; }
-.page-sub { font-size: 14px; color: #A0836C; display: block; margin-top: 2px; }
+.page-mark {
+  width: 44px; height: 44px; border-radius: 12px; background: #ffffff;
+  border: 1px solid #e2ddd8; display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.page-mark-t { font-size: 17px; font-weight: 700; color: #5c4033; }
+.page-title { font-size: 20px; font-weight: 600; color: #1c1917; display: block; }
+.page-sub { font-size: 13px; color: #6b6560; display: block; margin-top: 2px; line-height: 1.4; }
 
 /* Cards */
 .card {
-  background: #FFFFFF; border-radius: 18px; padding: 18px;
-  margin-bottom: 14px; box-shadow: 0 2px 16px rgba(0,0,0,0.05);
+  background: #ffffff; border-radius: 14px; padding: 18px;
+  margin-bottom: 12px; border: 1px solid #e2ddd8; box-shadow: none;
 }
-.card-label { font-size: 20px; font-weight: 700; color: #8C7A6B; display: block; margin: 10px 0 8px; }
+.card-bp-main { padding-bottom: 14px; }
+.card-label { font-size: 16px; font-weight: 600; color: #57534e; display: block; margin: 10px 0 8px; }
+.card-label:first-child { margin-top: 0; }
 .input-big {
-  height: 64px; font-size: 28px; border: 1.5px solid #F0E6DE; border-radius: 16px;
-  padding: 0 16px; background: #FFF8F3; color: #2D2D2D; caret-color: #E8825A;
+  height: 64px; font-size: 28px; border: 1px solid #e2ddd8; border-radius: 12px;
+  padding: 0 16px; background: #fafaf9; color: #1c1917; caret-color: #6b4f3c;
+}
+.sysdia-row { display: flex; gap: 12px; margin-bottom: 4px; }
+.sysdia-col { flex: 1; min-width: 0; }
+.sysdia-lbl {
+  font-size: 14px; font-weight: 600; color: #57534e; display: block; margin-bottom: 6px;
+}
+.input-compact {
+  width: 100%; box-sizing: border-box;
+  height: 56px; font-size: 24px; font-weight: 600; border: 1px solid #e2ddd8; border-radius: 12px;
+  padding: 0 12px; background: #fafaf9; color: #1c1917; caret-color: #6b4f3c;
+}
+.btn-submit-bp { margin-top: 14px; }
+
+/* 血压 Tab：次要入口（用药 Tab 同款思路） */
+.bp-action-btns { display: flex; flex-direction: column; gap: 10px; margin-bottom: 14px; }
+.btn-bp-extra {
+  height: 50px; line-height: 50px; font-size: 15px; font-weight: 600;
+  border-radius: 12px; border: 1px solid #e2ddd8; background: #ffffff; color: #57534e;
+  padding: 0 16px; text-align: center;
+}
+.btn-bp-extra-on {
+  border-color: #6b4f3c; color: #6b4f3c; background: #f5f0eb;
 }
 
 /* Primary Button */
 .btn-primary {
-  margin-top: 12px; height: 60px; line-height: 60px; font-size: 20px; font-weight: 700;
-  background: linear-gradient(135deg, #FF9A56 0%, #E8825A 100%); color: #fff;
-  border-radius: 14px; border: none; box-shadow: 0 4px 14px rgba(232,130,90,0.25);
+  margin-top: 12px; height: 60px; line-height: 60px; font-size: 18px; font-weight: 600;
+  background: #6b4f3c; color: #fff;
+  border-radius: 12px; border: 1px solid #6b4f3c; box-shadow: none;
 }
+.card-bp-extra .btn-primary { margin-top: 8px; }
 
 /* Quick Buttons */
 .btn-row { display: flex; gap: 10px; margin-top: 6px; }
@@ -689,52 +749,55 @@ const handleLogout = () => {
   width: 100%; height: 64px; line-height: 64px; font-size: 22px; font-weight: 800;
   border-radius: 16px; border: none; letter-spacing: 2px;
 }
-.btn-hint { font-size: 12px; color: #A0836C; margin-top: 4px; }
-.btn-high { background: linear-gradient(135deg, #FF7B7B, #FF4D4F); color: #fff; }
-.btn-normal { background: linear-gradient(135deg, #5CD97E, #34C759); color: #fff; }
-.btn-low { background: linear-gradient(135deg, #FFE066, #FFCC00); color: #4A4A00; }
+.btn-hint { font-size: 12px; color: #78716c; margin-top: 4px; }
+.btn-high { background: #b91c1c; color: #fff; }
+.btn-normal { background: #166534; color: #fff; }
+.btn-low { background: #ca8a04; color: #fff; }
 
 /* Empty State */
 .empty { text-align: center; padding: 20px 0; }
-.empty-icon { font-size: 36px; display: block; margin-bottom: 8px; }
-.empty-text { font-size: 15px; color: #B0A090; }
+.empty-line {
+  width: 28px; height: 2px; background: #d6d3d1; border-radius: 1px;
+  margin: 0 auto 10px;
+}
+.empty-text { font-size: 15px; color: #a8a29e; }
 
 /* Due Cards */
-.due-card { background: #FFF8F3; border: 1px solid #F0E6DE; border-radius: 14px; padding: 14px; margin-top: 12px; }
-.due-time { font-size: 17px; font-weight: 700; color: #E8825A; display: block; margin-bottom: 8px; }
+.due-card { background: #fafaf9; border: 1px solid #e2ddd8; border-radius: 12px; padding: 14px; margin-top: 12px; }
+.due-time { font-size: 16px; font-weight: 600; color: #6b4f3c; display: block; margin-bottom: 8px; }
 .due-item { display: flex; justify-content: space-between; align-items: center; padding: 4px 0; }
-.due-name { font-size: 17px; font-weight: 700; color: #2D2D2D; }
-.due-dose { font-size: 14px; color: #A0836C; }
+.due-name { font-size: 17px; font-weight: 600; color: #1c1917; }
+.due-dose { font-size: 14px; color: #78716c; }
 .btn-secondary {
   margin-top: 10px; height: 48px; line-height: 48px; font-size: 16px; font-weight: 600;
-  border-radius: 12px; background: #FFF1E6; color: #E8825A; border: 1px solid #F0E6DE;
+  border-radius: 10px; background: #f5f0eb; color: #6b4f3c; border: 1px solid #e2ddd8;
 }
 
 /* SOS Area */
 .sos-area { display: flex; flex-direction: column; align-items: center; margin-top: 20px; }
 .btn-sos {
-  width: 100%; height: 80px; line-height: 80px; font-size: 24px; font-weight: 800;
-  background: linear-gradient(135deg, #FF7B7B, #FF4D4F); color: #fff;
-  border-radius: 18px; border: none; box-shadow: 0 6px 20px rgba(255,77,79,0.35);
+  width: 100%; height: 80px; line-height: 80px; font-size: 20px; font-weight: 600;
+  background: #b91c1c; color: #fff;
+  border-radius: 12px; border: 1px solid #991b1b; box-shadow: none;
 }
-.sos-tip { margin-top: 10px; font-size: 14px; color: #FF4D4F; font-weight: 600; }
+.sos-tip { margin-top: 10px; font-size: 14px; color: #991b1b; font-weight: 500; }
 
 /* Info Row */
-.info-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #F0E6DE; margin-bottom: 16px; }
-.info-label { font-size: 16px; color: #8C7A6B; }
-.info-val { font-size: 18px; font-weight: 700; color: #2D2D2D; }
+.info-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #e7e5e4; margin-bottom: 16px; }
+.info-label { font-size: 16px; color: #78716c; }
+.info-val { font-size: 18px; font-weight: 600; color: #1c1917; }
 /* 我的 - 老人端极简展示 */
 .me-card { text-align: center; padding: 30px 20px; }
-.me-nickname { font-size: 36px; font-weight: 900; color: #2D2D2D; display: block; margin-bottom: 6px; }
-.me-name { font-size: 18px; color: #8C7A6B; display: block; margin-bottom: 10px; }
-.me-phone { font-size: 22px; color: #E8825A; font-weight: 700; display: block; letter-spacing: 2px; }
+.me-nickname { font-size: 32px; font-weight: 700; color: #1c1917; display: block; margin-bottom: 6px; }
+.me-name { font-size: 18px; color: #78716c; display: block; margin-bottom: 10px; }
+.me-phone { font-size: 22px; color: #6b4f3c; font-weight: 600; display: block; letter-spacing: 1px; }
 .btn-logout-big {
-  height: 64px; line-height: 64px; font-size: 22px; font-weight: 800;
-  background: #FF4D4F; color: #fff; border-radius: 16px; border: none;
-  box-shadow: 0 4px 16px rgba(255,77,79,0.3); letter-spacing: 4px;
+  height: 64px; line-height: 64px; font-size: 18px; font-weight: 600;
+  background: #b91c1c; color: #fff; border-radius: 12px; border: 1px solid #991b1b;
+  box-shadow: none; letter-spacing: 2px;
 }
 
-.card-sub { font-size: 13px; color: #8C7A6B; display: block; margin-bottom: 10px; }
+.card-sub { font-size: 13px; color: #78716c; display: block; margin-bottom: 10px; }
 
 /* 预警提示全屏弹窗 */
 .result-mask {
@@ -745,43 +808,47 @@ const handleLogout = () => {
   width: 100%; height: 100%; display: flex; flex-direction: column;
   align-items: center; justify-content: center; padding: 40px 30px;
 }
-.result-fullscreen.ok { background: linear-gradient(180deg, #E8F8ED 0%, #34C759 60%, #28A745 100%); }
-.result-fullscreen.danger { background: linear-gradient(180deg, #FFE8E8 0%, #FF4D4F 60%, #D9363E 100%); }
-.result-fullscreen.warn { background: linear-gradient(180deg, #FFFBE6 0%, #FFCC00 60%, #E6B800 100%); }
-.result-emoji { font-size: 80px; display: block; margin-bottom: 20px; }
-.result-label { font-size: 20px; color: rgba(255,255,255,0.85); display: block; margin-bottom: 8px; font-weight: 600; }
-.result-title { font-size: 56px; font-weight: 900; color: #fff; display: block; margin-bottom: 16px; letter-spacing: 8px; }
-.result-fullscreen.warn .result-title,
-.result-fullscreen.warn .result-label,
-.result-fullscreen.warn .result-hint,
-.result-fullscreen.warn .result-value { color: #4A4A00; }
-.result-value { font-size: 32px; font-weight: 700; color: #fff; display: block; margin-bottom: 20px; }
-.result-hint { font-size: 18px; color: rgba(255,255,255,0.9); display: block; line-height: 28px; text-align: center; margin-bottom: 40px; }
+.result-fullscreen.ok { background: #ecfdf3; }
+.result-fullscreen.danger { background: #fef2f2; }
+.result-fullscreen.warn { background: #fffbeb; }
+.result-label { font-size: 14px; color: #57534e; display: block; margin-bottom: 8px; font-weight: 500; letter-spacing: 2px; }
+.result-title { font-size: 44px; font-weight: 700; color: #1c1917; display: block; margin-bottom: 16px; letter-spacing: 4px; }
+.result-fullscreen.danger .result-title { color: #991b1b; }
+.result-fullscreen.warn .result-title { color: #854d0e; }
+.result-fullscreen.ok .result-title { color: #166534; }
+.result-value { font-size: 26px; font-weight: 600; color: #44403c; display: block; margin-bottom: 20px; }
+.result-hint { font-size: 16px; color: #57534e; display: block; line-height: 26px; text-align: center; margin-bottom: 40px; max-width: 300px; }
 .result-close-btn {
-  width: 260px; height: 64px; line-height: 64px; font-size: 22px; font-weight: 700;
-  border-radius: 16px; background: rgba(255,255,255,0.3); color: #fff;
-  border: 2px solid rgba(255,255,255,0.5); letter-spacing: 4px;
+  width: 260px; height: 56px; line-height: 56px; font-size: 17px; font-weight: 600;
+  border-radius: 12px; background: #ffffff; color: #1c1917;
+  border: 1px solid #d6d3d1; letter-spacing: 2px;
 }
 
 /* Tab Bar */
 .tab-bar {
   position: fixed; left: 0; right: 0; bottom: 0; height: 68px;
-  background: #FFFFFF; border-top: 1px solid #F0E6DE;
+  background: #ffffff; border-top: 1px solid #e7e5e4;
   display: flex; align-items: center; justify-content: space-around;
   padding-bottom: env(safe-area-inset-bottom); z-index: 50;
 }
 .tab-item {
-  display: flex; flex-direction: column; align-items: center; gap: 2px;
-  padding: 4px 0; min-width: 50px;
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  padding: 4px 0; min-width: 44px;
 }
-.tab-icon { font-size: 22px; }
-.tab-label { font-size: 11px; color: #A0A0A0; }
-.tab-active .tab-label { color: #E8825A; font-weight: 700; }
+.tab-glyph-wrap {
+  width: 28px; height: 28px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+}
+.tab-glyph { font-size: 13px; font-weight: 600; color: #a8a29e; }
+.tab-label { font-size: 10px; color: #a8a29e; font-weight: 500; }
+.tab-active .tab-label { color: #6b4f3c; font-weight: 600; }
+.tab-active .tab-glyph-wrap { background: #ede9e6; }
+.tab-active .tab-glyph { color: #5c4033; }
 
 /* BLE Status */
 .ble-status { display: flex; align-items: center; gap: 8px; margin: 8px 0 12px; }
 .ble-dot { font-size: 14px; }
 .ble-on { color: #34C759; }
 .ble-off { color: #CCCCCC; }
-.ble-text { font-size: 14px; color: #8C7A6B; }
+.ble-text { font-size: 14px; color: #78716c; }
 </style>

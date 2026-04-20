@@ -1,9 +1,9 @@
 <template>
   <view class="page">
     <view class="header">
-      <text class="header-emoji">👴</text>
+      <view class="header-mark"><text class="header-mark-t">老</text></view>
       <text class="header-title">老人端登录</text>
-      <text class="header-sub">欢迎回来，暖夕一直在</text>
+      <text class="header-sub">账号登录</text>
     </view>
 
     <view class="form-card">
@@ -115,37 +115,42 @@ const goToRegister = () => {
 <style scoped>
 .page {
   min-height: 100vh;
-  background: linear-gradient(180deg, #FFF1E6 0%, #FFFFFF 40%);
+  background: #f2f0ee;
   padding: 0 24px;
 }
 .header {
-  padding-top: 60px;
-  padding-bottom: 36px;
+  padding-top: 56px;
+  padding-bottom: 32px;
   display: flex;
   flex-direction: column;
   align-items: center;
 }
-.header-emoji { font-size: 48px; margin-bottom: 12px; }
-.header-title { font-size: 26px; font-weight: 800; color: #2D2D2D; margin-bottom: 6px; }
-.header-sub { font-size: 14px; color: #A0836C; }
+.header-mark {
+  width: 56px; height: 56px; border-radius: 14px; background: #ffffff;
+  border: 1px solid #e2ddd8; display: flex; align-items: center; justify-content: center;
+  margin-bottom: 16px;
+}
+.header-mark-t { font-size: 22px; font-weight: 700; color: #5c4033; }
+.header-title { font-size: 24px; font-weight: 600; color: #1c1917; margin-bottom: 6px; }
+.header-sub { font-size: 14px; color: #78716c; }
 .form-card {
-  background: #FFFFFF;
-  border-radius: 20px;
+  background: #ffffff;
+  border-radius: 14px;
   padding: 28px 22px;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+  border: 1px solid #e2ddd8;
 }
 .field { margin-bottom: 20px; }
-.field-label { font-size: 14px; font-weight: 600; color: #8C7A6B; display: block; margin-bottom: 8px; }
+.field-label { font-size: 14px; font-weight: 600; color: #57534e; display: block; margin-bottom: 8px; }
 .field-input {
   height: 50px;
   font-size: 17px;
   padding: 0 14px;
-  color: #2D2D2D;
-  caret-color: #E8825A;
-  background: #FFF8F3;
-  border: 1px solid #F0E6DE;
-  border-radius: 12px;
-  -webkit-text-fill-color: #2D2D2D;
+  color: #1c1917;
+  caret-color: #6b4f3c;
+  background: #ffffff;
+  border: 1px solid #e2ddd8;
+  border-radius: 10px;
+  -webkit-text-fill-color: #1c1917;
 }
 .remember-row {
   display: flex;
@@ -162,22 +167,22 @@ const goToRegister = () => {
   align-items: center;
   justify-content: center;
 }
-.checked { background: #E8825A; border-color: #E8825A; }
+.checked { background: #6b4f3c; border-color: #6b4f3c; }
 .check-mark { font-size: 13px; color: #fff; }
-.remember-text { color: #8C7A6B; font-size: 14px; }
+.remember-text { color: #78716c; font-size: 14px; }
 .btn-login {
   width: 100%;
   height: 50px;
   line-height: 50px;
-  background: linear-gradient(135deg, #FF9A56 0%, #E8825A 100%);
+  background: #6b4f3c;
   color: #fff;
-  font-size: 18px;
-  font-weight: 700;
-  border-radius: 14px;
-  border: none;
-  box-shadow: 0 4px 16px rgba(232, 130, 90, 0.3);
-  letter-spacing: 4px;
+  font-size: 17px;
+  font-weight: 600;
+  border-radius: 10px;
+  border: 1px solid #5c4033;
+  box-shadow: none;
+  letter-spacing: 2px;
 }
 .link-row { text-align: center; margin-top: 18px; }
-.register-link { color: #E8825A; font-size: 14px; }
+.register-link { color: #6b4f3c; font-size: 14px; }
 </style>

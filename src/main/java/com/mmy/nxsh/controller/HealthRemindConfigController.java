@@ -4,6 +4,8 @@ import com.mmy.nxsh.common.ApiResponse;
 import com.mmy.nxsh.controller.dto.HealthRemindConfigRequest;
 import com.mmy.nxsh.entity.HealthRemindConfig;
 import com.mmy.nxsh.service.HealthRemindConfigService;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -11,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalTime;
 import java.util.List;
 
 @RestController
@@ -33,5 +36,13 @@ public class HealthRemindConfigController {
     @GetMapping("/configs")
     public ApiResponse<List<HealthRemindConfig>> list(@RequestParam Long elderlyId) {
         return ApiResponse.success(healthRemindConfigService.listConfigs(elderlyId));
+    }
+
+    @DeleteMapping("/config")
+    public ApiResponse<Void> delete(
+            @RequestParam Long elderlyId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalTime remindTime) {
+        healthRemindConfigService.deleteConfig(elderlyId, remindTime);
+        return ApiResponse.success(null);
     }
 }

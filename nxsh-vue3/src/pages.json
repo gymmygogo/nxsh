@@ -1,4 +1,10 @@
 {
+	"easycom": {
+		"autoscan": true,
+		"custom": {
+			"^qiun-(.*)": "@qiun/uni-ucharts/components/qiun-$1/qiun-$1.vue"
+		}
+	},
 	"pages": [
 		{
 			"path": "pages/index/index",
@@ -11,42 +17,42 @@
 			"path": "pages/login/elderly-login",
 			"style": {
 				"navigationBarTitleText": "老人端登录",
-				"navigationBarBackgroundColor": "#FFF6F0"
+				"navigationBarBackgroundColor": "#FFFFFF"
 			}
 		},
 		{
 			"path": "pages/elderly/home",
 			"style": {
 				"navigationBarTitleText": "健康守护",
-				"navigationBarBackgroundColor": "#FFF6F0"
+				"navigationBarBackgroundColor": "#FFFFFF"
 			}
 		},
 		{
 			"path": "pages/login/family-login",
 			"style": {
 				"navigationBarTitleText": "家属端登录",
-				"navigationBarBackgroundColor": "#EDF4FF"
+				"navigationBarBackgroundColor": "#FFFFFF"
 			}
 		},
 		{
 			"path": "pages/family/settings",
 			"style": {
 				"navigationBarTitleText": "家属设置",
-				"navigationBarBackgroundColor": "#EDF4FF"
+				"navigationBarBackgroundColor": "#FFFFFF"
 			}
 		},
 		{
 			"path": "pages/login/family-register",
 			"style": {
 				"navigationBarTitleText": "家属端注册",
-				"navigationBarBackgroundColor": "#EDF4FF"
+				"navigationBarBackgroundColor": "#FFFFFF"
 			}
 		},
 		{
 			"path": "pages/login/elderly-register",
 			"style": {
 				"navigationBarTitleText": "老人端注册",
-				"navigationBarBackgroundColor": "#FFF6F0"
+				"navigationBarBackgroundColor": "#FFFFFF"
 			}
 		},
 		{
@@ -64,14 +70,14 @@
 			"path": "pages/family/medicine-dashboard",
 			"style": {
 				"navigationBarTitleText": "用药看板",
-				"navigationBarBackgroundColor": "#EDF4FF"
+				"navigationBarBackgroundColor": "#FFFFFF"
 			}
 		},
 		{
 			"path": "pages/family/add-medicine",
 			"style": {
 				"navigationBarTitleText": "添加药品",
-				"navigationBarBackgroundColor": "#EDF4FF"
+				"navigationBarBackgroundColor": "#FFFFFF"
 			}
 		},
 		{
@@ -89,21 +95,21 @@
 			"path": "pages/elderly/ai-care",
 			"style": {
 				"navigationBarTitleText": "暖心聊天",
-				"navigationBarBackgroundColor": "#FFF6F0"
+				"navigationBarBackgroundColor": "#FFFFFF"
 			}
 		},
 		{
 			"path": "pages/family/sos-log",
 			"style": {
 				"navigationBarTitleText": "求救记录",
-				"navigationBarBackgroundColor": "#EDF4FF"
+				"navigationBarBackgroundColor": "#FFFFFF"
 			}
 		},
 		{
 			"path": "pages/family/emergency-contact",
 			"style": {
 				"navigationBarTitleText": "紧急联系人",
-				"navigationBarBackgroundColor": "#EDF4FF"
+				"navigationBarBackgroundColor": "#FFFFFF"
 			}
 		},
 		{
@@ -132,8 +138,8 @@
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
 		"navigationBarTitleText": "暖夕守护",
-		"navigationBarBackgroundColor": "#F8F8F8",
-		"backgroundColor": "#F8F8F8",
+		"navigationBarBackgroundColor": "#FFFFFF",
+		"backgroundColor": "#F0F1F3",
 		"app-plus": {
 			"titleNView": {
 				"type": "default"

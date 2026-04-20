@@ -47,6 +47,20 @@ public class HealthRemindConfigServiceImpl extends ServiceImpl<HealthRemindConfi
     }
 
     @Override
+    public void deleteConfig(Long elderlyId, LocalTime remindTime) {
+        if (elderlyId == null) {
+            throw new IllegalArgumentException("elderlyId不能为空");
+        }
+        if (remindTime == null) {
+            throw new IllegalArgumentException("remindTime不能为空");
+        }
+        baseMapper.delete(new LambdaQueryWrapper<HealthRemindConfig>()
+                .eq(HealthRemindConfig::getElderlyId, elderlyId)
+                .eq(HealthRemindConfig::getType, TYPE_BP)
+                .eq(HealthRemindConfig::getRemindTime, remindTime));
+    }
+
+    @Override
     public List<HealthRemindConfig> listConfigs(Long elderlyId) {
         if (elderlyId == null) {
             throw new IllegalArgumentException("elderlyId不能为空");

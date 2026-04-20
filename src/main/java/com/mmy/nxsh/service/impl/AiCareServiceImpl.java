@@ -10,11 +10,13 @@ import com.mmy.nxsh.service.AiCareService;
 import com.mmy.nxsh.service.ai.ChatModelService;
 import com.mmy.nxsh.service.ai.SpeechToTextService;
 import com.mmy.nxsh.service.ai.TextToSpeechService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 
+@Slf4j
 @Service
 public class AiCareServiceImpl implements AiCareService {
 
@@ -47,7 +49,7 @@ public class AiCareServiceImpl implements AiCareService {
 
         String userText = speechToTextService.transcribe(voiceFile);
         String aiText = chatModelService.reply(userText);
-        String aiVoiceUrl = textToSpeechService.synthesize(aiText);
+        String aiVoiceUrl = safeSynthesize(aiText);
 
         AiChatLog log = new AiChatLog();
         log.setElderlyId(elderlyId);
@@ -84,7 +86,7 @@ public class AiCareServiceImpl implements AiCareService {
 
         String userText = text.trim();
         String aiText = chatModelService.reply(userText);
-        String aiVoiceUrl = textToSpeechService.synthesize(aiText);
+        String aiVoiceUrl = safeSynthesize(aiText);
 
         AiChatLog log = new AiChatLog();
         log.setElderlyId(elderlyId);
@@ -130,5 +132,14 @@ public class AiCareServiceImpl implements AiCareService {
         resp.setAiText(last.getAiText());
         resp.setAiVoiceUrl(last.getAiVoiceUrl());
         return resp;
+    }
+
+    private String safeSynthesize(String aiText) {
+        try {
+            return textToSpeechService.synthesize(aiText);
+        } catch (Exception e) {
+            log.warn("TTS合成失败，已降级为纯文本回复: {}", e.getMessage());
+            return null;
+        }
     }
 }

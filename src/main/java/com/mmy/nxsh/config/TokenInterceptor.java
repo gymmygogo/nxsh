@@ -25,17 +25,26 @@ public class TokenInterceptor implements HandlerInterceptor {
             return true;
         }
 
-        String token = request.getHeader("Authorization");
-        if (token == null || token.isBlank()) {
+        String authHeader = request.getHeader("Authorization");
+        if (authHeader == null || authHeader.isBlank()) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.setContentType("application/json;charset=UTF-8");
             response.getWriter().write("{\"code\":401,\"message\":\"未登录或token已过期\"}");
             return false;
         }
 
-        // 移除可能的 "Bearer " 前缀
-        if (token.startsWith("Bearer ")) {
-            token = token.substring(7);
+        authHeader = authHeader.trim();
+        String token = authHeader;
+        // 兼容 Bearer/bearer 前缀与多余空白
+        if (authHeader.regionMatches(true, 0, "Bearer", 0, 6)) {
+            token = authHeader.substring(6).trim();
+        }
+
+        if (token.isBlank()) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json;charset=UTF-8");
+            response.getWriter().write("{\"code\":401,\"message\":\"未登录或token已过期\"}");
+            return false;
         }
 
         // 检查 elderly 或 family token 是否存在于 Redis

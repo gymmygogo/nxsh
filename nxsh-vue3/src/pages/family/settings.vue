@@ -1,7 +1,7 @@
 <template>
   <view class="page">
     <view class="page-header">
-      <text class="page-icon">⚙️</text>
+      <view class="page-mark"><text class="page-mark-t">设</text></view>
       <view>
         <text class="page-title">家属设置</text>
         <text class="page-sub">绑定老人 · 档案管理 · 守护配置</text>
@@ -11,7 +11,6 @@
     <!-- 绑定老人 -->
     <view class="card">
       <view class="card-title">
-        <text class="card-title-icon">🔗</text>
         <text class="card-title-text">绑定老人</text>
       </view>
       <view class="field">
@@ -39,14 +38,13 @@
     <!-- 老人档案 -->
     <view class="card">
       <view class="card-title">
-        <text class="card-title-icon">📋</text>
         <text class="card-title-text">老人档案</text>
       </view>
       <view class="form-row">
         <text class="form-label">性别</text>
         <radio-group @change="genderChange" class="radio-group">
-          <label class="radio-item"><radio value="male" color="#5B9BD5" />男</label>
-          <label class="radio-item"><radio value="female" color="#5B9BD5" />女</label>
+          <label class="radio-item"><radio value="male" color="#1e4a72" />男</label>
+          <label class="radio-item"><radio value="female" color="#1e4a72" />女</label>
         </radio-group>
       </view>
       <view class="form-row">
@@ -80,12 +78,11 @@
     <!-- 静默守护 -->
     <view class="card">
       <view class="card-title">
-        <text class="card-title-icon">🛡️</text>
-        <text class="card-title-text">静默守护设置</text>
+        <text class="card-title-text">静默守护</text>
       </view>
       <view class="form-row">
         <text class="form-label">开启预警</text>
-        <switch :checked="alertEnabled" @change="e => alertEnabled = e.detail.value" color="#5B9BD5" />
+        <switch :checked="alertEnabled" @change="e => alertEnabled = e.detail.value" color="#1e4a72" />
       </view>
       <view class="form-row">
         <text class="form-label">预警阈值</text>
@@ -336,81 +333,84 @@ loadGuardianSettings()
 </script>
 
 <style scoped>
-.page { min-height: 100vh; background: linear-gradient(180deg, #EDF4FF 0%, #F8FAFF 30%); padding: 0 16px 30px; }
+.page { min-height: 100vh; background: #f0f1f3; padding: 0 16px 30px; }
 
 /* Page Header */
 .page-header { display: flex; align-items: center; gap: 12px; padding: 20px 0 16px; }
-.page-icon { font-size: 30px; }
-.page-title { font-size: 22px; font-weight: 800; color: #2D2D2D; display: block; }
-.page-sub { font-size: 12px; color: #7A9BBF; display: block; margin-top: 2px; }
+.page-mark {
+  width: 44px; height: 44px; border-radius: 12px; background: #fff; border: 1px solid #e6e8ec;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.page-mark-t { font-size: 17px; font-weight: 700; color: #1e4a72; }
+.page-title { font-size: 20px; font-weight: 600; color: #1a1d21; display: block; }
+.page-sub { font-size: 12px; color: #6b7280; display: block; margin-top: 2px; }
 
 /* Cards */
 .card {
-  background: #FFFFFF; border-radius: 18px; padding: 20px;
-  margin-bottom: 14px; box-shadow: 0 2px 16px rgba(0,0,0,0.05);
+  background: #ffffff; border-radius: 14px; padding: 20px;
+  margin-bottom: 12px; border: 1px solid #e6e8ec; box-shadow: none;
 }
-.card-title { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
-.card-title-icon { font-size: 20px; }
-.card-title-text { font-size: 17px; font-weight: 700; color: #2D2D2D; }
+.card-title { margin-bottom: 14px; }
+.card-title-text { font-size: 16px; font-weight: 600; color: #1a1d21; }
 
 /* Fields */
 .field { margin-bottom: 14px; }
-.field-label { font-size: 13px; font-weight: 600; color: #6B8CAA; display: block; margin-bottom: 6px; }
+.field-label { font-size: 13px; font-weight: 600; color: #6b7280; display: block; margin-bottom: 6px; }
 .field-input {
-  height: 46px; font-size: 15px; padding: 0 14px; color: #2D2D2D; caret-color: #5B9BD5;
-  background: #F5F9FF; border: 1px solid #DEE9F5; border-radius: 12px; -webkit-text-fill-color: #2D2D2D;
+  height: 46px; font-size: 15px; padding: 0 14px; color: #1a1d21; caret-color: #1e4a72;
+  background: #ffffff; border: 1px solid #e6e8ec; border-radius: 10px; -webkit-text-fill-color: #1a1d21;
 }
 .code-row { display: flex; align-items: center; gap: 10px; }
 .code-input { flex: 1; }
 .btn-code {
   flex-shrink: 0; width: 110px; height: 46px; line-height: 46px; font-size: 13px; font-weight: 600;
-  background: #EDF4FF; color: #5B9BD5; border-radius: 12px; border: 1px solid #DEE9F5; text-align: center; padding: 0;
+  background: #f4f6f9; color: #1e4a72; border-radius: 10px; border: 1px solid #d8dee6; text-align: center; padding: 0;
 }
-.btn-code[disabled] { color: #A0B8CF; background: #F5F9FF; }
+.btn-code[disabled] { color: #9ca3af; background: #f3f4f6; }
 .picker-box {
-  height: 46px; line-height: 46px; border: 1px solid #DEE9F5; border-radius: 12px;
-  padding: 0 14px; font-size: 15px; background: #F5F9FF; color: #2D2D2D; margin-bottom: 14px;
+  height: 46px; line-height: 46px; border: 1px solid #e6e8ec; border-radius: 10px;
+  padding: 0 14px; font-size: 15px; background: #ffffff; color: #1a1d21; margin-bottom: 14px;
 }
 
 /* Form Rows */
 .form-row {
   display: flex; align-items: center; justify-content: space-between;
-  padding: 10px 0; border-bottom: 1px solid #F0F5FC;
+  padding: 10px 0; border-bottom: 1px solid #f0f1f3;
 }
-.form-label { font-size: 15px; color: #4A6A8A; font-weight: 600; }
+.form-label { font-size: 15px; color: #4b5563; font-weight: 600; }
 .form-input {
   width: 100px; height: 36px; font-size: 15px; text-align: right;
-  padding: 0 10px; border: 1px solid #DEE9F5; border-radius: 10px;
-  background: #F5F9FF; color: #2D2D2D; caret-color: #5B9BD5;
+  padding: 0 10px; border: 1px solid #e6e8ec; border-radius: 10px;
+  background: #ffffff; color: #1a1d21; caret-color: #1e4a72;
 }
 .radio-group { display: flex; gap: 16px; }
-.radio-item { font-size: 15px; color: #2D2D2D; display: flex; align-items: center; gap: 4px; }
+.radio-item { font-size: 15px; color: #1a1d21; display: flex; align-items: center; gap: 4px; }
 .picker-inline {
-  height: 36px; line-height: 36px; padding: 0 12px; border: 1px solid #DEE9F5;
-  border-radius: 10px; background: #F5F9FF; font-size: 14px; color: #2D2D2D;
+  height: 36px; line-height: 36px; padding: 0 12px; border: 1px solid #e6e8ec;
+  border-radius: 10px; background: #ffffff; font-size: 14px; color: #1a1d21;
 }
 
 /* Tags */
 .tags { display: flex; flex-wrap: wrap; gap: 10px; }
 .tag {
-  padding: 6px 14px; border: 1.5px solid #DEE9F5; border-radius: 20px;
-  font-size: 13px; color: #6B8CAA; background: #F5F9FF;
+  padding: 6px 14px; border: 1px solid #e6e8ec; border-radius: 999px;
+  font-size: 13px; color: #6b7280; background: #ffffff;
 }
-.tag-selected { background: linear-gradient(135deg, #6DB3F2, #5B9BD5); color: #fff; border-color: #5B9BD5; }
+.tag-selected { background: #1e4a72; color: #fff; border-color: #1e4a72; }
 
 /* Time Picker */
 .time-picker { display: flex; align-items: center; gap: 10px; margin-top: 4px; }
 .time-box {
-  height: 40px; line-height: 40px; padding: 0 16px; border: 1px solid #DEE9F5;
-  border-radius: 10px; background: #F5F9FF; font-size: 16px; font-weight: 600; color: #2D2D2D;
+  height: 40px; line-height: 40px; padding: 0 16px; border: 1px solid #e6e8ec;
+  border-radius: 10px; background: #ffffff; font-size: 16px; font-weight: 600; color: #1a1d21;
 }
-.time-sep { font-size: 14px; color: #7A9BBF; }
+.time-sep { font-size: 14px; color: #6b7280; }
 
 /* Primary Button */
 .btn-primary {
   width: 100%; height: 48px; line-height: 48px; margin-top: 8px;
-  background: linear-gradient(135deg, #6DB3F2 0%, #5B9BD5 100%); color: #fff;
-  font-size: 16px; font-weight: 700; border-radius: 14px; border: none;
-  box-shadow: 0 4px 14px rgba(91,155,213,0.25); letter-spacing: 2px;
+  background: #1e4a72; color: #fff;
+  font-size: 16px; font-weight: 600; border-radius: 10px; border: 1px solid #1e4a72;
+  box-shadow: none; letter-spacing: 1px;
 }
 </style>

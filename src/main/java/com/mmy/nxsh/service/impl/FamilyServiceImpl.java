@@ -108,11 +108,28 @@ public class FamilyServiceImpl extends ServiceImpl<UserFamilyMapper, UserFamily>
         }
         // 生成登录 token 并写入 Redis，设置 30 天过期
         String token = UUID.randomUUID().toString();
+
         stringRedisTemplate.opsForValue().set(TOKEN_PREFIX + token, family.getId().toString(), 30, TimeUnit.DAYS);
 
         FamilyLoginResponse resp = new FamilyLoginResponse();
         resp.setToken(token);
         resp.setFamilyId(family.getId());
+
+        // 🌟 修改后的查询逻辑：查出当前家属绑定的（主）老人记录
+        FamilyElderlyBind bind = lambdaQueryBind()
+                .eq(FamilyElderlyBind::getFamilyId, family.getId())
+                .orderByDesc(FamilyElderlyBind::getIsPrimary)
+                .last("limit 1")
+                .one();
+
+        // 🌟 根据查询结果组装返回值
+        if (bind != null) {
+            resp.setHasBound(true);
+            resp.setElderlyId(bind.getElderlyId());
+        } else {
+            resp.setHasBound(false);
+            resp.setElderlyId(null);
+        }
         return resp;
     }
 

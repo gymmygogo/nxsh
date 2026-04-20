@@ -1,7 +1,7 @@
 <template>
   <view class="page">
     <view class="hero">
-      <text class="hero-emoji">💊</text>
+      <view class="hero-mark"><text class="hero-mark-t">药</text></view>
       <text class="hero-title">用药提醒</text>
     </view>
 
@@ -16,13 +16,13 @@
       </view>
 
       <view class="actions">
-        <button class="btn-primary" @click="handleTake">✔ 全部已服</button>
+        <button class="btn-primary" @click="handleTake">全部已服</button>
         <button class="btn-secondary" @click="handleSnooze">稍后提醒</button>
       </view>
     </view>
 
     <view v-else class="empty-card">
-      <text class="empty-icon">🎉</text>
+      <view class="empty-line" />
       <text class="empty-text">暂无需要服用的药品</text>
     </view>
   </view>
@@ -57,8 +57,7 @@ onLoad((options) => {
 })
 
 const playBellThenVoice = () => {
-  // #ifdef APP-PLUS
-  // 播放标准慢节奏铃声（系统通知音）
+  // 尝试播放默认铃声，失败则直接播语音
   try {
     const bell = uni.createInnerAudioContext()
     bell.src = '/static/audio/medicine-bell.mp3'
@@ -68,13 +67,13 @@ const playBellThenVoice = () => {
     })
     bell.onError(() => {
       bell.destroy()
-      playVoice() // 铃声失败也继续播语音
+      playVoice()
     })
     bell.play()
     return
-  } catch (e) {}
-  // #endif
-  // H5 或铃声异常直接播语音
+  } catch (e) {
+    // ignored
+  }
   playVoice()
 }
 
@@ -157,36 +156,43 @@ const handleSnooze = () => {
 
 <style scoped>
 .page {
-  min-height: 100vh; background: linear-gradient(180deg, #FFF6F0 0%, #FFFFFF 40%);
+  min-height: 100vh; background: #f2f0ee;
   padding: 0 24px; display: flex; flex-direction: column;
 }
-.hero { padding-top: 60px; padding-bottom: 20px; text-align: center; }
-.hero-emoji { font-size: 52px; display: block; margin-bottom: 10px; }
-.hero-title { font-size: 28px; font-weight: 800; color: #2D2D2D; }
-.card {
-  background: #FFFFFF; border-radius: 20px; padding: 24px 20px;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.06); flex: 1; display: flex; flex-direction: column;
+.hero { padding-top: 56px; padding-bottom: 20px; text-align: center; display: flex; flex-direction: column; align-items: center; }
+.hero-mark {
+  width: 56px; height: 56px; border-radius: 14px; background: #fff; border: 1px solid #e2ddd8;
+  display: flex; align-items: center; justify-content: center; margin-bottom: 12px;
 }
-.time-display { font-size: 24px; color: #E8825A; font-weight: 800; text-align: center; display: block; margin-bottom: 20px; }
-.med-list { flex: 1; display: flex; flex-direction: column; gap: 14px; margin-bottom: 24px; }
+.hero-mark-t { font-size: 22px; font-weight: 700; color: #5c4033; }
+.hero-title { font-size: 24px; font-weight: 600; color: #1c1917; }
+.card {
+  background: #ffffff; border-radius: 14px; padding: 24px 20px;
+  border: 1px solid #e2ddd8; flex: 1; display: flex; flex-direction: column;
+}
+.time-display { font-size: 22px; color: #6b4f3c; font-weight: 600; text-align: center; display: block; margin-bottom: 20px; }
+.med-list { flex: 1; display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px; }
 .med-card {
-  background: #FFF8F3; border: 1.5px solid #F0E6DE; border-radius: 16px;
+  background: #fafaf9; border: 1px solid #e2ddd8; border-radius: 12px;
   padding: 18px; display: flex; flex-direction: column;
 }
-.med-name { font-size: 24px; font-weight: 800; color: #2D2D2D; margin-bottom: 6px; }
-.med-dose { font-size: 18px; color: #A0836C; font-weight: 600; }
-.actions { display: flex; flex-direction: column; gap: 14px; margin-bottom: 30px; }
+.med-name { font-size: 22px; font-weight: 600; color: #1c1917; margin-bottom: 6px; }
+.med-dose { font-size: 17px; color: #78716c; font-weight: 500; }
+.actions { display: flex; flex-direction: column; gap: 12px; margin-bottom: 30px; }
 .btn-primary {
-  background: linear-gradient(135deg, #5CD97E, #34C759); color: #fff;
-  font-size: 22px; font-weight: 800; height: 72px; line-height: 72px;
-  border-radius: 18px; border: none; box-shadow: 0 6px 20px rgba(52,199,89,0.3);
-  letter-spacing: 2px;
+  background: #166534; color: #fff;
+  font-size: 19px; font-weight: 600; height: 64px; line-height: 64px;
+  border-radius: 12px; border: 1px solid #14532d; box-shadow: none;
+  letter-spacing: 1px;
 }
 .btn-secondary {
-  background: #FFF1E6; color: #E8825A; border: 1px solid #F0E6DE;
-  font-size: 18px; font-weight: 600; height: 56px; line-height: 56px; border-radius: 14px;
+  background: #ffffff; color: #6b4f3c; border: 1px solid #e2ddd8;
+  font-size: 17px; font-weight: 600; height: 52px; line-height: 52px; border-radius: 12px;
 }
 .empty-card { text-align: center; padding: 80px 0; }
-.empty-icon { font-size: 48px; display: block; margin-bottom: 12px; }
-.empty-text { font-size: 18px; color: #B0A090; }
+.empty-line {
+  width: 28px; height: 2px; background: #d6d3d1; border-radius: 1px;
+  margin: 0 auto 12px;
+}
+.empty-text { font-size: 17px; color: #a8a29e; }
 </style>

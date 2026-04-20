@@ -1,7 +1,7 @@
 <template>
   <view class="page">
     <view class="page-header">
-      <text class="page-icon">💊</text>
+      <view class="page-mark"><text class="page-mark-t">药</text></view>
       <view>
         <text class="page-title">添加药品</text>
         <text class="page-sub">为老人添加用药记录</text>
@@ -11,7 +11,7 @@
     <!-- 常用药快选 -->
     <view class="card">
       <view class="card-head">
-        <text class="card-head-title">📋 常用药快选</text>
+        <text class="card-head-title">常用药快选</text>
         <text class="card-head-sub">点击药品自动填入</text>
       </view>
       <view v-for="(group, gIdx) in commonMedicines" :key="gIdx" class="med-group">
@@ -51,8 +51,16 @@
         </picker>
       </view>
       <view class="field">
+        <text class="field-label">药品照片</text>
+        <view class="photo-row">
+          <button class="btn-voice" @click="uploadPhoto">上传照片</button>
+          <text v-if="form.photoUrl" class="photo-tip">已上传</text>
+        </view>
+        <image v-if="form.photoUrl" class="photo-preview" :src="form.photoUrl" mode="aspectFill" />
+      </view>
+      <view class="field">
         <text class="field-label">亲情语音录制</text>
-        <button class="btn-voice" @click="uploadVoice">🎙️ 点击录音并上传</button>
+        <button class="btn-voice" @click="uploadVoice">录音并上传</button>
       </view>
 
       <button class="btn-primary" @click="saveMedicine">保存药品</button>
@@ -178,6 +186,47 @@ const uploadVoice = () => {
   }
 }
 
+const uploadPhoto = () => {
+  uni.chooseImage({
+    count: 1,
+    sizeType: ['compressed'],
+    sourceType: ['album', 'camera'],
+    success: (res) => {
+      const filePath = res.tempFilePaths?.[0]
+      if (!filePath) {
+        uni.showToast({ title: '未选择图片', icon: 'none' })
+        return
+      }
+      uni.showLoading({ title: '上传中...', mask: true })
+      uploadFile({
+        url: '/medicine/family/upload',
+        filePath,
+        name: 'file',
+        formData: { subDir: 'photo' },
+        success: (uploadRes) => {
+          uni.hideLoading()
+          try {
+            const data = JSON.parse(uploadRes.data)
+            if (data.code === 200 && data.data) {
+              form.value.photoUrl = data.data
+              uni.showToast({ title: '照片上传成功', icon: 'success' })
+            } else {
+              uni.showToast({ title: data.message || '上传失败', icon: 'none' })
+            }
+          } catch (e) {
+            uni.showToast({ title: '解析失败', icon: 'none' })
+          }
+        },
+        fail: () => {
+          uni.hideLoading()
+          uni.showToast({ title: '上传失败', icon: 'none' })
+        }
+      })
+    },
+    fail: () => uni.showToast({ title: '选择图片失败', icon: 'none' })
+  })
+}
+
 const saveMedicine = () => {
   if (!form.value.name || !form.value.dosageDesc) {
     uni.showToast({ title: '药名与剂量必填', icon: 'none' })
@@ -221,48 +270,58 @@ const saveMedicine = () => {
 </script>
 
 <style scoped>
-.page { min-height: 100vh; background: linear-gradient(180deg, #EDF4FF 0%, #F8FAFF 30%); padding: 0 16px 30px; }
+.page { min-height: 100vh; background: #f0f1f3; padding: 0 16px 30px; }
 .page-header { display: flex; align-items: center; gap: 12px; padding: 20px 0 16px; }
-.page-icon { font-size: 30px; }
-.page-title { font-size: 22px; font-weight: 800; color: #2D2D2D; display: block; }
-.page-sub { font-size: 12px; color: #7A9BBF; display: block; margin-top: 2px; }
+.page-mark {
+  width: 44px; height: 44px; border-radius: 12px; background: #fff; border: 1px solid #e6e8ec;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.page-mark-t { font-size: 17px; font-weight: 700; color: #1e4a72; }
+.page-title { font-size: 20px; font-weight: 600; color: #1a1d21; display: block; }
+.page-sub { font-size: 12px; color: #6b7280; display: block; margin-top: 2px; }
 .card {
-  background: #FFFFFF; border-radius: 18px; padding: 20px;
-  box-shadow: 0 2px 16px rgba(0,0,0,0.05);
+  background: #ffffff; border-radius: 14px; padding: 20px;
+  border: 1px solid #e6e8ec; margin-bottom: 12px;
 }
 .field { margin-bottom: 16px; }
-.field-label { font-size: 13px; font-weight: 600; color: #6B8CAA; display: block; margin-bottom: 6px; }
+.field-label { font-size: 13px; font-weight: 600; color: #6b7280; display: block; margin-bottom: 6px; }
 .field-input {
-  height: 46px; font-size: 15px; padding: 0 14px; color: #2D2D2D; caret-color: #5B9BD5;
-  background: #F5F9FF; border: 1px solid #DEE9F5; border-radius: 12px;
+  height: 46px; font-size: 15px; padding: 0 14px; color: #1a1d21; caret-color: #1e4a72;
+  background: #ffffff; border: 1px solid #e6e8ec; border-radius: 10px;
 }
 .picker-box {
-  height: 46px; line-height: 46px; border: 1px solid #DEE9F5; border-radius: 12px;
-  padding: 0 14px; font-size: 15px; background: #F5F9FF; color: #2D2D2D;
+  height: 46px; line-height: 46px; border: 1px solid #e6e8ec; border-radius: 10px;
+  padding: 0 14px; font-size: 15px; background: #ffffff; color: #1a1d21;
 }
 .btn-voice {
   height: 44px; line-height: 44px; font-size: 14px; font-weight: 600;
-  background: #EDF4FF; color: #5B9BD5; border-radius: 12px; border: 1px solid #DEE9F5;
+  background: #f4f6f9; color: #1e4a72; border-radius: 10px; border: 1px solid #d8dee6;
 }
 /* Common Medicine */
 .card-head { display: flex; flex-direction: column; gap: 4px; margin-bottom: 12px; }
-.card-head-title { font-size: 17px; font-weight: 700; color: #2D2D2D; display: block; }
-.card-head-sub { font-size: 12px; color: #7A9BBF; }
+.card-head-title { font-size: 16px; font-weight: 600; color: #1a1d21; display: block; }
+.card-head-sub { font-size: 12px; color: #6b7280; }
 .med-group { margin-bottom: 12px; }
 .med-group:last-child { margin-bottom: 0; }
-.med-group-label { font-size: 12px; font-weight: 600; color: #7A9BBF; display: block; margin-bottom: 6px; }
+.med-group-label { font-size: 12px; font-weight: 600; color: #6b7280; display: block; margin-bottom: 6px; }
 .med-group-items { display: flex; flex-wrap: wrap; gap: 8px; }
 .med-chip {
-  padding: 6px 14px; border: 1.5px solid #DEE9F5; border-radius: 20px;
-  font-size: 13px; color: #4A6A8A; background: #F5F9FF;
+  padding: 6px 14px; border: 1px solid #e6e8ec; border-radius: 999px;
+  font-size: 13px; color: #4b5563; background: #ffffff;
 }
 .med-chip-active {
-  background: linear-gradient(135deg, #6DB3F2, #5B9BD5); color: #fff; border-color: #5B9BD5;
+  background: #1e4a72; color: #fff; border-color: #1e4a72;
 }
 .btn-primary {
   width: 100%; height: 48px; line-height: 48px; margin-top: 8px;
-  background: linear-gradient(135deg, #6DB3F2 0%, #5B9BD5 100%); color: #fff;
-  font-size: 16px; font-weight: 700; border-radius: 14px; border: none;
-  box-shadow: 0 4px 14px rgba(91,155,213,0.25); letter-spacing: 2px;
+  background: #1e4a72; color: #fff;
+  font-size: 16px; font-weight: 600; border-radius: 10px; border: 1px solid #1e4a72;
+  box-shadow: none; letter-spacing: 1px;
+}
+.photo-row { display: flex; align-items: center; gap: 10px; }
+.photo-tip { font-size: 12px; color: #6b7280; }
+.photo-preview {
+  margin-top: 8px; width: 120px; height: 120px; border-radius: 12px;
+  border: 1px solid #e6e8ec; background: #f9fafb;
 }
 </style>

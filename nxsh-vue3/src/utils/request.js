@@ -7,11 +7,31 @@ import { BASE_URL } from '@/config.js'
  */
 export const request = (options) => {
   const token = uni.getStorageSync('token')
+  const userType = uni.getStorageSync('userType')
+  // 增加这三行终极排查日志
+  console.log('【请求拦截】准备请求 URL:', options.url)
+  console.log('【请求拦截】从本地拿到的 token 是:', token)
+
   const header = { ...(options.header || {}) }
+
+  const method = String(options.method || 'GET').toUpperCase()
+  const data = options.data
+  const hasExplicitContentType = !!(header['Content-Type'] || header['content-type'])
+  if (
+    (method === 'POST' || method === 'PUT' || method === 'PATCH') &&
+    data != null &&
+    typeof data === 'object' &&
+    !(typeof FormData !== 'undefined' && data instanceof FormData) &&
+    !(data instanceof ArrayBuffer) &&
+    !hasExplicitContentType
+  ) {
+    header['Content-Type'] = 'application/json'
+  }
 
   if (token) {
     header['Authorization'] = token
   }
+  console.log('【请求拦截】最终要发出去的 header 是:', header)
 
   return new Promise((resolve, reject) => {
     uni.request({
@@ -22,13 +42,15 @@ export const request = (options) => {
         // token 过期自动跳转登录
         if (res.statusCode === 401) {
           uni.removeStorageSync('token')
+          uni.removeStorageSync('userType')
           uni.removeStorageSync('elderlyId')
           uni.removeStorageSync('elderlyPhone')
           uni.removeStorageSync('familyId')
           uni.removeStorageSync('familyPhone')
           uni.showToast({ title: '登录已过期，请重新登录', icon: 'none' })
+          const loginPath = userType === 'family' ? '/pages/login/family-login' : '/pages/login/elderly-login'
           setTimeout(() => {
-            uni.redirectTo({ url: '/pages/login/elderly-login' })
+            uni.redirectTo({ url: loginPath })
           }, 1500)
           return
         }
@@ -54,6 +76,7 @@ export const request = (options) => {
  */
 export const uploadFile = (options) => {
   const token = uni.getStorageSync('token')
+  const userType = uni.getStorageSync('userType')
   const header = { ...(options.header || {}) }
 
   if (token) {
@@ -68,7 +91,12 @@ export const uploadFile = (options) => {
       success: (res) => {
         if (res.statusCode === 401) {
           uni.removeStorageSync('token')
+          uni.removeStorageSync('userType')
           uni.showToast({ title: '登录已过期，请重新登录', icon: 'none' })
+          const loginPath = userType === 'family' ? '/pages/login/family-login' : '/pages/login/elderly-login'
+          setTimeout(() => {
+            uni.redirectTo({ url: loginPath })
+          }, 1500)
           return
         }
         if (options.success) {

@@ -1,7 +1,7 @@
 <template>
   <view class="page">
     <view class="page-header">
-      <text class="page-icon">🚨</text>
+      <view class="page-mark"><text class="page-mark-t">救</text></view>
       <view>
         <text class="page-title">求救记录</text>
         <text class="page-sub">历史紧急求救信息</text>
@@ -16,7 +16,7 @@
         </view>
       </view>
       <view v-if="logs.length === 0" class="empty">
-        <text class="empty-icon">✅</text>
+        <view class="empty-line" />
         <text class="empty-text">暂无求救记录</text>
       </view>
     </view>
@@ -58,27 +58,35 @@ onShow(() => {
 </script>
 
 <style scoped>
-.page { min-height: 100vh; background: linear-gradient(180deg, #EDF4FF 0%, #F8FAFF 30%); padding: 0 16px 30px; }
+.page { min-height: 100vh; background: #f0f1f3; padding: 0 16px 30px; }
 .page-header { display: flex; align-items: center; gap: 12px; padding: 20px 0 16px; }
-.page-icon { font-size: 30px; }
-.page-title { font-size: 22px; font-weight: 800; color: #2D2D2D; display: block; }
-.page-sub { font-size: 12px; color: #7A9BBF; display: block; margin-top: 2px; }
-.log-list { display: flex; flex-direction: column; gap: 12px; }
+.page-mark {
+  width: 44px; height: 44px; border-radius: 12px; background: #fff; border: 1px solid #e6e8ec;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.page-mark-t { font-size: 17px; font-weight: 700; color: #1e4a72; }
+.page-title { font-size: 20px; font-weight: 600; color: #1a1d21; display: block; }
+.page-sub { font-size: 12px; color: #6b7280; display: block; margin-top: 2px; }
+.log-list { display: flex; flex-direction: column; gap: 10px; }
 .log-card {
-  background: #FFFFFF; border-radius: 16px; padding: 16px;
+  background: #ffffff; border-radius: 12px; padding: 16px;
   display: flex; align-items: center; gap: 14px;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+  border: 1px solid #e6e8ec;
 }
 .log-badge {
   width: 44px; height: 44px; border-radius: 12px;
-  background: linear-gradient(135deg, #FF7B7B, #FF4D4F);
-  color: #fff; font-size: 12px; font-weight: 800;
+  background: #b91c1c;
+  color: #fff; font-size: 11px; font-weight: 700;
   display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  letter-spacing: 0.5px;
 }
 .log-body { flex: 1; }
-.log-time { font-size: 14px; font-weight: 700; color: #FF4D4F; display: block; margin-bottom: 4px; }
-.log-address { font-size: 14px; color: #4A6A8A; display: block; }
+.log-time { font-size: 14px; font-weight: 600; color: #991b1b; display: block; margin-bottom: 4px; }
+.log-address { font-size: 14px; color: #4b5563; display: block; }
 .empty { text-align: center; padding: 40px 0; }
-.empty-icon { font-size: 36px; display: block; margin-bottom: 8px; }
-.empty-text { font-size: 14px; color: #A0B8CF; }
+.empty-line {
+  width: 28px; height: 2px; background: #d1d5db; border-radius: 1px;
+  margin: 0 auto 10px;
+}
+.empty-text { font-size: 14px; color: #9ca3af; }
 </style>

@@ -1,7 +1,7 @@
 <template>
   <view class="page">
     <view class="header-card">
-      <text class="header-emoji">👴</text>
+      <view class="header-avatar"><text class="header-avatar-t">{{ userName.charAt(0) || '用' }}</text></view>
       <view class="header-info">
         <text class="header-name">{{ userName }}</text>
         <text class="header-phone">{{ phone }}</text>
@@ -9,17 +9,17 @@
     </view>
 
     <view class="sos-wrapper">
-      <button class="btn-sos" @click="handleSOS">🆘 一键呼救</button>
+      <button class="btn-sos" @click="handleSOS">一键呼救</button>
       <text class="sos-tip">如遇危急情况请立即点击</text>
     </view>
 
     <view class="actions">
       <view class="module-card card-bp" @click="goBloodPressure">
-        <text class="module-icon">❤️</text>
+        <view class="module-abbr">血</view>
         <text class="module-text">血压记录</text>
       </view>
       <view class="module-card card-ai" @click="goAiCare">
-        <text class="module-icon">💬</text>
+        <view class="module-abbr">聊</view>
         <text class="module-text">暖心聊天</text>
       </view>
     </view>
@@ -125,42 +125,52 @@ const handleLogout = () => {
 
 <style scoped>
 .page {
-  min-height: 100vh; background: linear-gradient(180deg, #FFF6F0 0%, #FFFFFF 35%);
+  min-height: 100vh; background: #f2f0ee;
   padding: 20px 20px 30px; display: flex; flex-direction: column;
 }
 .header-card {
-  background: #FFFFFF; border-radius: 18px; padding: 24px 20px;
-  margin-bottom: 20px; box-shadow: 0 2px 16px rgba(0,0,0,0.05);
+  background: #ffffff; border-radius: 14px; padding: 22px 18px;
+  margin-bottom: 18px; border: 1px solid #e2ddd8;
   display: flex; align-items: center; gap: 16px;
 }
-.header-emoji { font-size: 40px; }
+.header-avatar {
+  width: 48px; height: 48px; border-radius: 12px; background: #ede9e6;
+  border: 1px solid #e2ddd8; display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.header-avatar-t { font-size: 20px; font-weight: 700; color: #5c4033; }
 .header-info { display: flex; flex-direction: column; }
-.header-name { font-size: 28px; font-weight: 800; color: #2D2D2D; display: block; }
-.header-phone { font-size: 16px; color: #A0836C; display: block; margin-top: 4px; }
+.header-name { font-size: 24px; font-weight: 600; color: #1c1917; display: block; }
+.header-phone { font-size: 15px; color: #78716c; display: block; margin-top: 4px; }
 .sos-wrapper {
-  display: flex; flex-direction: column; align-items: center; margin-bottom: 24px;
+  display: flex; flex-direction: column; align-items: center; margin-bottom: 22px;
 }
 .btn-sos {
-  width: 180px; height: 180px; border-radius: 50%;
-  background: linear-gradient(135deg, #FF7B7B, #FF4D4F); color: #fff;
-  font-size: 28px; font-weight: 800; display: flex; align-items: center; justify-content: center;
-  box-shadow: 0 8px 30px rgba(255,77,79,0.4); margin-bottom: 12px; border: none;
+  width: 168px; height: 168px; border-radius: 50%;
+  background: #b91c1c; color: #fff;
+  font-size: 20px; font-weight: 600; display: flex; align-items: center; justify-content: center;
+  box-shadow: none; margin-bottom: 10px; border: 1px solid #991b1b;
 }
-.sos-tip { font-size: 14px; color: #FF4D4F; font-weight: 600; }
+.sos-tip { font-size: 14px; color: #991b1b; font-weight: 500; }
 .actions {
-  flex: 1; display: flex; flex-direction: column; gap: 14px;
+  flex: 1; display: flex; flex-direction: column; gap: 12px;
 }
 .module-card {
-  height: 100px; border-radius: 18px; display: flex; align-items: center;
-  justify-content: center; gap: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+  height: 96px; border-radius: 14px; display: flex; align-items: center;
+  justify-content: center; gap: 14px; border: 1px solid #e2ddd8;
 }
-.card-bp { background: linear-gradient(135deg, #FFF1E6, #FFE4D4); }
-.card-ai { background: linear-gradient(135deg, #E8F8E8, #D4F0D4); }
-.module-icon { font-size: 28px; }
-.module-text { font-size: 22px; font-weight: 700; color: #2D2D2D; }
+.card-bp { background: #fafaf9; }
+.card-ai { background: #f0fdf4; }
+.module-abbr {
+  width: 36px; height: 36px; border-radius: 10px; background: #ffffff;
+  border: 1px solid #e2ddd8; font-size: 16px; font-weight: 700; color: #5c4033;
+  display: flex; align-items: center; justify-content: center; line-height: 1;
+}
+.card-ai .module-abbr { color: #166534; border-color: #bbf7d0; background: #ecfdf3; }
+.module-text { font-size: 20px; font-weight: 600; color: #1c1917; }
 .btn-logout {
-  width: 100%; height: 56px; line-height: 56px;
-  background: #FFF1F0; color: #FF4D4F; border: 1px solid #FFD6D6;
-  font-size: 18px; font-weight: 600; border-radius: 14px; margin-top: 24px;
+  width: 100%; height: 52px; line-height: 52px;
+  background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca;
+  font-size: 16px; font-weight: 600; border-radius: 12px; margin-top: 22px;
 }
 </style>

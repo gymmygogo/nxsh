@@ -5,6 +5,17 @@ import { BASE_URL } from '@/config.js'
 
 const WS_BASE_URL = BASE_URL.replace(/^http/, 'ws')
 
+const parseId = (value) => {
+  if (value === null || value === undefined || value === '') return null
+  const n = Number(value)
+  return Number.isFinite(n) && n > 0 ? n : null
+}
+
+const isFamilyBound = (status) => {
+  const boundFlag = status?.bound === true || status?.bound === 1 || status?.bound === '1'
+  return boundFlag && parseId(status?.elderlyId) !== null
+}
+
 export default {
   onLaunch: function () {
     console.log('App Launch')
@@ -33,21 +44,24 @@ export default {
             data: { familyId },
             success: (res) => {
               if (res.statusCode === 200 && res.data.code === 200) {
-                const bound = res.data.data?.bound
-                const elderlyId = res.data.data?.elderlyId
-                if (bound && elderlyId) {
+                const status = res.data.data || {}
+                const elderlyId = parseId(status.elderlyId)
+                if (isFamilyBound(status) && elderlyId) {
                   uni.setStorageSync('elderlyId', elderlyId)
                   connectWebSocket()
                   uni.reLaunch({ url: '/pages/family/main' })
                 } else {
+                  uni.removeStorageSync('elderlyId')
                   uni.reLaunch({ url: '/pages/family/settings' })
                 }
               } else {
-                uni.reLaunch({ url: '/pages/family/settings' })
+                uni.showToast({ title: '获取绑定状态失败，请稍后重试', icon: 'none' })
+                uni.reLaunch({ url: '/pages/family/main' })
               }
             },
             fail: () => {
-              uni.reLaunch({ url: '/pages/family/settings' })
+              uni.showToast({ title: '网络请求失败，请稍后重试', icon: 'none' })
+              uni.reLaunch({ url: '/pages/family/main' })
             }
           })
         }
@@ -112,7 +126,7 @@ function handleWsMessage(data, userType) {
     // 老人血压异常，弹出健康警报
     const sysdia = (data.sys && data.dia) ? `\n血压值：${data.sys}/${data.dia}` : ''
     uni.showModal({
-      title: '⚠️ 健康警报',
+      title: '健康警报',
       content: (data.msg || '老人血压异常，请及时关注') + sysdia,
       showCancel: false,
       confirmText: '立即查看'
@@ -140,7 +154,7 @@ function handleWsMessage(data, userType) {
   } else if (data.type === 'LOW_STOCK' && userType === 'family') {
     // 药品库存不足预警
     uni.showModal({
-      title: '⚠️ 备药提醒',
+      title: '备药提醒',
       content: data.msg || '药品库存不足，请及时补货',
       showCancel: false,
       confirmText: '知道了'
@@ -149,7 +163,7 @@ function handleWsMessage(data, userType) {
   } else if (data.type === 'SOS' && userType === 'family') {
     // 老人紧急求救
     uni.showModal({
-      title: '🆘 紧急求救',
+      title: '紧急求救',
       content: data.msg || '老人发出紧急求救，请立即关注！',
       showCancel: false,
       confirmText: '立即查看'

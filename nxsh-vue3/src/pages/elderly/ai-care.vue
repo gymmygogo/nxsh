@@ -2,10 +2,10 @@
   <view class="ai-wrap">
     <!-- 顶部欢迎栏 -->
     <view class="ai-header">
-      <text class="ai-header-icon">🤗</text>
+      <view class="ai-header-mark"><text class="ai-header-mark-t">聊</text></view>
       <view>
         <text class="ai-header-title">暖心聊天</text>
-        <text class="ai-header-sub">有什么心事，说给我听</text>
+        <text class="ai-header-sub">语音或文字交流</text>
       </view>
     </view>
 
@@ -17,17 +17,17 @@
         class="row"
         :class="msg.role === 'user' ? 'row-right' : 'row-left'"
       >
-        <view v-if="msg.role === 'ai'" class="avatar avatar-ai">🤗</view>
+        <view v-if="msg.role === 'ai'" class="avatar avatar-ai"><text class="avatar-letter">伴</text></view>
         <view class="bubble" :class="msg.role === 'user' ? 'bubble-user' : 'bubble-ai'">
           <text v-if="msg.text" class="bubble-text">{{ msg.text }}</text>
           <text v-else class="bubble-text">[语音消息]</text>
         </view>
-        <view v-if="msg.role === 'user'" class="avatar avatar-user">👴</view>
+        <view v-if="msg.role === 'user'" class="avatar avatar-user"><text class="avatar-letter">我</text></view>
       </view>
 
       <!-- 播放 + 重听 -->
       <view v-if="messages.length > 1" class="replay-row">
-        <view class="replay-btn" @click="replayLast">🔊 再听一遍</view>
+        <view class="replay-btn" @click="replayLast">再听一遍</view>
       </view>
 
       <view v-if="thinking" class="thinking">
@@ -36,7 +36,7 @@
           <text class="dot d2">●</text>
           <text class="dot d3">●</text>
         </view>
-        <text class="thinking-text">暖夕正在思考...</text>
+        <text class="thinking-text">正在回复…</text>
       </view>
     </view>
 
@@ -51,7 +51,7 @@
         @mousedown="startRecord"
         @mouseup="stopRecord"
       >
-        <text class="btn-talk-text">{{ recording ? '🎙️ 松开发送...' : '🎤 按住说话' }}</text>
+        <text class="btn-talk-text">{{ recording ? '松开发送' : '按住说话' }}</text>
       </view>
       <view class="input-row">
         <input class="text-input" v-model="textDraft" placeholder="也可以打字输入" @confirm="sendText" />
@@ -473,9 +473,14 @@ onUnmounted(() => {
   display: flex; align-items: center; gap: 12px;
   padding: 16px 16px 12px;
 }
-.ai-header-icon { font-size: 36px; }
-.ai-header-title { font-size: 22px; font-weight: 800; color: #2D2D2D; display: block; }
-.ai-header-sub { font-size: 14px; color: #A0836C; display: block; margin-top: 2px; }
+.ai-header-mark {
+  width: 44px; height: 44px; border-radius: 12px; background: #ecfdf3;
+  border: 1px solid #bbf7d0; display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.ai-header-mark-t { font-size: 18px; font-weight: 700; color: #166534; }
+.ai-header-title { font-size: 20px; font-weight: 600; color: #1c1917; display: block; }
+.ai-header-sub { font-size: 14px; color: #78716c; display: block; margin-top: 2px; }
 
 /* === 聊天列表 === */
 .chat-list {
@@ -497,10 +502,10 @@ onUnmounted(() => {
   width: 38px; height: 38px;
   border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
-  font-size: 20px;
 }
-.avatar-ai { background: #E8F8E8; }
-.avatar-user { background: #FFF1E6; }
+.avatar-letter { font-size: 15px; font-weight: 700; }
+.avatar-ai { background: #ecfdf3; border: 1px solid #bbf7d0; color: #166534; }
+.avatar-user { background: #fafaf9; border: 1px solid #e2ddd8; color: #5c4033; }
 
 /* === 气泡 === */
 .bubble {
@@ -515,7 +520,7 @@ onUnmounted(() => {
   border-top-left-radius: 6px;
 }
 .bubble-user {
-  background: linear-gradient(135deg, #FF9A56, #E8825A);
+  background: #6b4f3c;
   color: #fff;
   border-top-right-radius: 6px;
 }
@@ -535,11 +540,12 @@ onUnmounted(() => {
   align-items: center;
   gap: 6px;
   padding: 10px 28px;
-  border-radius: 24px;
-  background: #FFF1E6;
-  color: #E8825A;
-  font-size: 18px;
-  font-weight: 700;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #6b4f3c;
+  border: 1px solid #e2ddd8;
+  font-size: 16px;
+  font-weight: 600;
 }
 
 /* === 思考动画 === */
@@ -550,7 +556,7 @@ onUnmounted(() => {
   padding: 12px 0 0 46px;
 }
 .dot-box { display: flex; gap: 4px; }
-.dot { font-size: 12px; color: #E8825A; opacity: 0.3; }
+.dot { font-size: 12px; color: #78716c; opacity: 0.3; }
 .d1 { animation: blink 1.4s 0s infinite; }
 .d2 { animation: blink 1.4s 0.2s infinite; }
 .d3 { animation: blink 1.4s 0.4s infinite; }
@@ -558,7 +564,7 @@ onUnmounted(() => {
   0%, 80%, 100% { opacity: 0.3; }
   40% { opacity: 1; }
 }
-.thinking-text { font-size: 14px; color: #C4B0A0; }
+.thinking-text { font-size: 14px; color: #a8a29e; }
 
 /* === 底部操作区 === */
 .ai-bottom {
@@ -566,8 +572,8 @@ onUnmounted(() => {
   left: 0; right: 0;
   bottom: calc(68px + env(safe-area-inset-bottom));
   padding: 10px 14px 10px;
-  background: #FFFFFF;
-  border-top: 1px solid #F0E6DE;
+  background: #ffffff;
+  border-top: 1px solid #e7e5e4;
   z-index: 40;
 }
 
@@ -582,11 +588,11 @@ onUnmounted(() => {
   min-width: 0;
   height: 46px;
   padding: 0 14px;
-  border-radius: 14px;
-  background: #FFF8F3;
-  border: 1px solid #F0E6DE;
+  border-radius: 12px;
+  background: #fafaf9;
+  border: 1px solid #e2ddd8;
   font-size: 16px;
-  color: #2D2D2D;
+  color: #1c1917;
 }
 .btn-send {
   flex: 0 0 72px;
@@ -594,10 +600,10 @@ onUnmounted(() => {
   line-height: 46px;
   font-size: 16px;
   font-weight: 600;
-  background: linear-gradient(135deg, #FF9A56, #E8825A);
+  background: #6b4f3c;
   color: #fff;
-  border-radius: 14px;
-  border: none;
+  border-radius: 12px;
+  border: 1px solid #5c4033;
 }
 
 .btn-talk {
@@ -605,24 +611,26 @@ onUnmounted(() => {
   height: 54px;
   line-height: 54px;
   text-align: center;
-  font-size: 18px;
-  font-weight: 700;
-  border-radius: 16px;
-  background: linear-gradient(135deg, #FF9A56, #E8825A);
+  font-size: 17px;
+  font-weight: 600;
+  border-radius: 12px;
+  background: #6b4f3c;
   color: #fff;
-  box-shadow: 0 4px 14px rgba(232,130,90,0.25);
-  letter-spacing: 2px;
+  border: 1px solid #5c4033;
+  box-shadow: none;
+  letter-spacing: 1px;
   user-select: none;
   -webkit-user-select: none;
 }
 .btn-talk-text {
-  font-size: 18px;
-  font-weight: 700;
+  font-size: 17px;
+  font-weight: 600;
   color: #fff;
-  letter-spacing: 2px;
+  letter-spacing: 1px;
 }
 .btn-talk-active {
-  background: linear-gradient(135deg, #FF7B7B, #FF4D4F) !important;
-  box-shadow: 0 4px 14px rgba(255,77,79,0.3) !important;
+  background: #b91c1c !important;
+  border-color: #991b1b !important;
+  box-shadow: none !important;
 }
 </style>

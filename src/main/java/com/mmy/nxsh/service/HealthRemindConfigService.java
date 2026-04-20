@@ -10,5 +10,7 @@ public interface HealthRemindConfigService extends IService<HealthRemindConfig> 
 
     HealthRemindConfig saveOrUpdateConfig(Long elderlyId, LocalTime remindTime, boolean active);
 
+    void deleteConfig(Long elderlyId, LocalTime remindTime);
+
     List<HealthRemindConfig> listConfigs(Long elderlyId);
 }

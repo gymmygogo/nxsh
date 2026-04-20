@@ -2,7 +2,7 @@
   <view class="page">
     <view class="page-header">
       <view class="header-left">
-        <text class="page-icon">📞</text>
+        <view class="page-mark"><text class="page-mark-t">联</text></view>
         <view>
           <text class="page-title">紧急联系人</text>
           <text class="page-sub">管理紧急呼叫对象</text>
@@ -28,7 +28,7 @@
         </view>
       </view>
       <view v-if="contacts.length === 0" class="empty">
-        <text class="empty-icon">📇</text>
+        <view class="empty-line" />
         <text class="empty-text">暂无紧急联系人</text>
       </view>
     </view>
@@ -184,61 +184,69 @@ const remove = (id) => {
 </script>
 
 <style scoped>
-.page { min-height: 100vh; background: linear-gradient(180deg, #EDF4FF 0%, #F8FAFF 30%); padding: 0 16px 30px; }
+.page { min-height: 100vh; background: #f0f1f3; padding: 0 16px 30px; }
 .page-header { display: flex; justify-content: space-between; align-items: center; padding: 20px 0 16px; }
 .header-left { display: flex; align-items: center; gap: 12px; }
-.page-icon { font-size: 28px; }
-.page-title { font-size: 20px; font-weight: 800; color: #2D2D2D; display: block; }
-.page-sub { font-size: 12px; color: #7A9BBF; display: block; margin-top: 2px; }
-.btn-add {
-  background: linear-gradient(135deg, #6DB3F2, #5B9BD5); color: #fff;
-  font-size: 13px; font-weight: 600; margin: 0; padding: 0 16px;
-  height: 34px; line-height: 34px; border-radius: 17px; border: none;
-}
-.contact-list { display: flex; flex-direction: column; gap: 12px; }
-.contact-card {
-  background: #FFFFFF; border-radius: 16px; padding: 16px;
-  display: flex; align-items: center; gap: 12px;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.05);
-}
-.contact-avatar {
-  width: 44px; height: 44px; border-radius: 14px;
-  background: linear-gradient(135deg, #D6EBFF, #BDDCFF);
+.page-mark {
+  width: 44px; height: 44px; border-radius: 12px; background: #fff; border: 1px solid #e6e8ec;
   display: flex; align-items: center; justify-content: center; flex-shrink: 0;
 }
-.avatar-text { font-size: 18px; font-weight: 800; color: #5B9BD5; }
+.page-mark-t { font-size: 17px; font-weight: 700; color: #1e4a72; }
+.page-title { font-size: 20px; font-weight: 600; color: #1a1d21; display: block; }
+.page-sub { font-size: 12px; color: #6b7280; display: block; margin-top: 2px; }
+.btn-add {
+  background: #1e4a72; color: #fff;
+  font-size: 13px; font-weight: 600; margin: 0; padding: 0 16px;
+  height: 34px; line-height: 34px; border-radius: 10px; border: 1px solid #1e4a72;
+}
+.contact-list { display: flex; flex-direction: column; gap: 10px; }
+.contact-card {
+  background: #ffffff; border-radius: 12px; padding: 16px;
+  display: flex; align-items: center; gap: 12px;
+  border: 1px solid #e6e8ec;
+}
+.contact-avatar {
+  width: 44px; height: 44px; border-radius: 12px;
+  background: #e8ecf2;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  border: 1px solid #e6e8ec;
+}
+.avatar-text { font-size: 18px; font-weight: 700; color: #1e4a72; }
 .info { flex: 1; display: flex; flex-direction: column; gap: 2px; }
-.c-name { font-size: 16px; font-weight: 700; color: #2D2D2D; }
-.c-detail { font-size: 13px; color: #7A9BBF; }
-.c-priority { font-size: 11px; color: #A0B8CF; }
+.c-name { font-size: 16px; font-weight: 600; color: #1a1d21; }
+.c-detail { font-size: 13px; color: #6b7280; }
+.c-priority { font-size: 11px; color: #9ca3af; }
 .actions { display: flex; gap: 6px; flex-shrink: 0; }
-.btn-icon { width: 32px; height: 32px; line-height: 32px; padding: 0; font-size: 14px; border-radius: 8px; border: none; }
-.up { background: #EDF4FF; color: #5B9BD5; }
-.down { background: #EDF4FF; color: #5B9BD5; }
-.del { background: #FFF1F0; color: #FF4D4F; }
+.btn-icon { width: 32px; height: 32px; line-height: 32px; padding: 0; font-size: 14px; border-radius: 8px; border: 1px solid #e6e8ec; }
+.up { background: #f4f6f9; color: #1e4a72; }
+.down { background: #f4f6f9; color: #1e4a72; }
+.del { background: #fef2f2; color: #b91c1c; border-color: #fecaca; }
 .empty { text-align: center; padding: 40px 0; }
-.empty-icon { font-size: 36px; display: block; margin-bottom: 8px; }
-.empty-text { font-size: 14px; color: #A0B8CF; }
+.empty-line {
+  width: 28px; height: 2px; background: #d1d5db; border-radius: 1px;
+  margin: 0 auto 10px;
+}
+.empty-text { font-size: 14px; color: #9ca3af; }
 .modal {
   position: fixed; top: 0; left: 0; right: 0; bottom: 0;
   background: rgba(0,0,0,0.5); z-index: 1000;
   display: flex; justify-content: center; align-items: center;
 }
-.modal-box { background: #fff; width: 85%; border-radius: 20px; padding: 24px; }
-.modal-title { font-size: 18px; font-weight: 700; color: #2D2D2D; display: block; margin-bottom: 18px; text-align: center; }
+.modal-box { background: #fff; width: 85%; border-radius: 14px; padding: 24px; border: 1px solid #e6e8ec; }
+.modal-title { font-size: 17px; font-weight: 600; color: #1a1d21; display: block; margin-bottom: 18px; text-align: center; }
 .modal-field { margin-bottom: 14px; }
-.modal-label { font-size: 13px; font-weight: 600; color: #6B8CAA; display: block; margin-bottom: 6px; }
+.modal-label { font-size: 13px; font-weight: 600; color: #6b7280; display: block; margin-bottom: 6px; }
 .modal-input {
-  height: 44px; border: 1px solid #DEE9F5; border-radius: 12px;
-  padding: 0 14px; font-size: 15px; background: #F5F9FF; color: #2D2D2D;
+  height: 44px; border: 1px solid #e6e8ec; border-radius: 10px;
+  padding: 0 14px; font-size: 15px; background: #ffffff; color: #1a1d21;
 }
 .modal-btns { display: flex; gap: 12px; margin-top: 6px; }
 .btn-cancel {
-  flex: 1; background: #F0F5FC; color: #7A9BBF; height: 44px; line-height: 44px;
-  font-size: 15px; font-weight: 600; border-radius: 12px; border: none;
+  flex: 1; background: #f3f4f6; color: #4b5563; height: 44px; line-height: 44px;
+  font-size: 15px; font-weight: 600; border-radius: 10px; border: 1px solid #e5e7eb;
 }
 .btn-confirm {
-  flex: 1; background: linear-gradient(135deg, #6DB3F2, #5B9BD5); color: #fff;
-  height: 44px; line-height: 44px; font-size: 15px; font-weight: 600; border-radius: 12px; border: none;
+  flex: 1; background: #1e4a72; color: #fff;
+  height: 44px; line-height: 44px; font-size: 15px; font-weight: 600; border-radius: 10px; border: 1px solid #1e4a72;
 }
 </style>
