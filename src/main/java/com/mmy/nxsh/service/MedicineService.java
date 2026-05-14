@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface MedicineService {
-    List<DueMedicineGroupDTO> getDueMedicines(Long elderlyId, LocalDateTime time);
+    List<DueMedicineGroupDTO> getDueMedicines(Long elderlyId, LocalDateTime time, Integer windowMinutes);
 
     void markTaken(Long elderlyId, LocalDateTime planTime, List<Long> medicineIds);
 

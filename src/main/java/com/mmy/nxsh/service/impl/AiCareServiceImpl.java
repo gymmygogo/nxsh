@@ -1,5 +1,6 @@
 package com.mmy.nxsh.service.impl;
 
+
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.mmy.nxsh.controller.dto.AiCareChatResponse;
 import com.mmy.nxsh.entity.AiCareReply;
@@ -48,14 +49,13 @@ public class AiCareServiceImpl implements AiCareService {
         }
 
         String userText = speechToTextService.transcribe(voiceFile);
-        String aiText = chatModelService.reply(userText);
+        String aiText = chatModelService.reply(elderlyId, userText);
         String aiVoiceUrl = safeSynthesize(aiText);
 
         AiChatLog log = new AiChatLog();
         log.setElderlyId(elderlyId);
         log.setUserId(elderlyId);
-        log.setSenderRole(1);
-        log.setUserType(1);
+
         log.setUserMessage(userText);
         log.setAiResponse(aiText);
         log.setChatTime(LocalDateTime.now());
@@ -70,6 +70,7 @@ public class AiCareServiceImpl implements AiCareService {
 
         AiCareChatResponse resp = new AiCareChatResponse();
         resp.setReplyId(reply.getId());
+        resp.setUserText(userText);
         resp.setAiText(aiText);
         resp.setAiVoiceUrl(aiVoiceUrl);
         return resp;
@@ -85,14 +86,13 @@ public class AiCareServiceImpl implements AiCareService {
         }
 
         String userText = text.trim();
-        String aiText = chatModelService.reply(userText);
+        String aiText = chatModelService.reply(elderlyId, userText);
         String aiVoiceUrl = safeSynthesize(aiText);
 
         AiChatLog log = new AiChatLog();
         log.setElderlyId(elderlyId);
         log.setUserId(elderlyId);
-        log.setSenderRole(1);
-        log.setUserType(1);
+
         log.setUserMessage(userText);
         log.setAiResponse(aiText);
         log.setChatTime(LocalDateTime.now());
@@ -107,6 +107,7 @@ public class AiCareServiceImpl implements AiCareService {
 
         AiCareChatResponse resp = new AiCareChatResponse();
         resp.setReplyId(reply.getId());
+        resp.setUserText(userText);
         resp.setAiText(aiText);
         resp.setAiVoiceUrl(aiVoiceUrl);
         return resp;
@@ -129,6 +130,7 @@ public class AiCareServiceImpl implements AiCareService {
 
         AiCareChatResponse resp = new AiCareChatResponse();
         resp.setReplyId(last.getId());
+        resp.setUserText(last.getUserText());
         resp.setAiText(last.getAiText());
         resp.setAiVoiceUrl(last.getAiVoiceUrl());
         return resp;

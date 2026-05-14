@@ -20,8 +20,7 @@ class MedicineReminderTaskTest {
         MedicineReminderTask task = new MedicineReminderTask(
                 mock(MedicineService.class),
                 mock(UserElderlyMapper.class),
-                mock(FamilyElderlyBindMapper.class),
-                mock(MedicineInfoMapper.class)
+                mock(FamilyElderlyBindMapper.class)
         );
         Method m = MedicineReminderTask.class.getDeclaredMethod("isInQuietHours", LocalDateTime.class);
         m.setAccessible(true);

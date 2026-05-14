@@ -32,8 +32,9 @@ public class MedicineController {
 
     @GetMapping("/due")
     public ApiResponse<List<DueMedicineGroupDTO>> getDueMedicines(@RequestParam Long elderlyId,
-                                                                  @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime time) {
-        return ApiResponse.success(medicineService.getDueMedicines(elderlyId, time));
+                                                                  @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime time,
+                                                                  @RequestParam(required = false, defaultValue = "0") Integer windowMinutes) {
+        return ApiResponse.success(medicineService.getDueMedicines(elderlyId, time, windowMinutes));
     }
 
     @PostMapping("/take")

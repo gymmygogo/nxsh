@@ -10,6 +10,7 @@ import com.mmy.nxsh.mapper.UserElderlyMapper;
 import com.mmy.nxsh.service.impl.ElderlyServiceImpl;
 import com.mmy.nxsh.websocket.FamilyWebSocketServer;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -23,6 +24,9 @@ import java.util.List;
 @Slf4j
 @Component
 public class GuardianAlertTask {
+
+    @Value("${nxsh.tasks.guardian-alert.enabled:false}")
+    private boolean enabled;
 
     private final UserElderlyMapper userElderlyMapper;
     private final FamilyElderlyBindMapper familyElderlyBindMapper;
@@ -41,6 +45,10 @@ public class GuardianAlertTask {
      */
     @Scheduled(cron = "0 */10 * * * ?")
     public void checkInactiveElderly() {
+        if (!enabled) {
+            return;
+        }
+
         // 查询所有开启守护的老人
         List<UserElderly> elders = userElderlyMapper.selectList(
                 new LambdaQueryWrapper<UserElderly>()

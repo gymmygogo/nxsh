@@ -1,5 +1,15 @@
 package com.mmy.nxsh.service.ai;
 
 public interface ChatModelService {
-    String reply(String userText);
+    /**
+     * Backward-compatible single-turn call.
+     */
+    default String reply(String userText) {
+        return reply(null, userText);
+    }
+
+    /**
+     * Multi-turn chat with memory scoped by elderlyId.
+     */
+    String reply(Long elderlyId, String userText);
 }

@@ -13,11 +13,8 @@ import java.time.LocalDateTime;
 public class AiChatLog extends BaseEntity {
     private Long elderlyId;
     private Long userId;
-    private Integer senderRole;
-    private Integer userType;
     private String userMessage;
     private String aiResponse;
     private String contentText;
-    private String audioUrl;
     private LocalDateTime chatTime;
 }

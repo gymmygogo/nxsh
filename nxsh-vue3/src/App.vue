@@ -21,10 +21,6 @@ export default {
     console.log('App Launch')
     initSilentGuardian()
 
-    // 开启用药轮询拦截器逻辑
-    startMedicineCheckTask()
-    // 开启血压提醒本地轮询
-    startBpReminderCheck()
 
     // Auto login check
     const token = uni.getStorageSync('token')
@@ -174,82 +170,9 @@ function handleWsMessage(data, userType) {
     uni.showToast({ title: data.msg || '老人分享了位置', icon: 'none', duration: 2000 })
     uni.$emit('locationRefresh', data)
   }
+
 }
 
-// 定义一个基础的时间轮询，简单化处理
-let medicineCheckTimer = null
-function startMedicineCheckTask() {
-  if (medicineCheckTimer) clearInterval(medicineCheckTimer)
-
-  medicineCheckTimer = setInterval(() => {
-    const userType = uni.getStorageSync('userType')
-    const elderlyId = uni.getStorageSync('elderlyId')
-    // 仅针对老人端发起检查并在前台展示
-    if (userType === 'elderly' && elderlyId) {
-      request({
-        url: '/medicine/due',
-        method: 'GET',
-        data: { elderlyId, time: new Date().toISOString() },
-        success: (res) => {
-          if (res.statusCode === 200 && res.data.code === 200) {
-            const dueGroups = res.data.data
-            if (dueGroups && dueGroups.length > 0) {
-              const currentGroup = dueGroups[0]
-              // 跳转到用药弹窗页，传入数据
-              uni.navigateTo({
-                url: `/pages/elderly/medicine-reminder?data=${encodeURIComponent(JSON.stringify(currentGroup))}`
-              })
-            }
-          }
-        }
-      })
-    }
-  }, 10000) // 开发测试阶段设为 10 秒，生产环境建议 60 秒
-}
-
-// 血压提醒本地轮询（补充 WebSocket 推送，确保后台回前台也能触发）
-let bpReminderTimer = null
-let lastBpReminderMinute = '' // 防止同一分钟重复弹窗
-function startBpReminderCheck() {
-  if (bpReminderTimer) clearInterval(bpReminderTimer)
-
-  bpReminderTimer = setInterval(() => {
-    const userType = uni.getStorageSync('userType')
-    const elderlyId = uni.getStorageSync('elderlyId')
-    if (userType !== 'elderly' || !elderlyId) return
-
-    const now = new Date()
-    const minuteKey = `${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}`
-    if (minuteKey === lastBpReminderMinute) return // 同一分钟不重复
-
-    request({
-      url: '/api/health/remind/configs',
-      method: 'GET',
-      data: { elderlyId: Number(elderlyId) },
-      success: (res) => {
-        if (res.statusCode === 200 && res.data?.code === 200) {
-          const configs = res.data.data || []
-          for (const cfg of configs) {
-            if (cfg.isActive !== 1) continue
-            // remindTime 格式 "08:00:00" 或 "08:00"
-            const cfgTime = (cfg.remindTime || '').substring(0, 5)
-            if (cfgTime === minuteKey) {
-              lastBpReminderMinute = minuteKey
-              const elderlyName = uni.getStorageSync('elderlyName') || ''
-              const msg = elderlyName
-                ? `${elderlyName}，时间到了，请测量您的血压`
-                : '时间到了，请测量您的血压'
-              uni.navigateTo({
-                url: `/pages/elderly/bp-reminder?time=${encodeURIComponent(cfgTime)}&msg=${encodeURIComponent(msg)}`
-              })
-              break
-            }
-          }
-        }
-      }
-    })
-  }, 15000) // 每 15 秒检查一次
-}
 </script>
 
 <style>

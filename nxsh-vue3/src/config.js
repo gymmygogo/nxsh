@@ -6,9 +6,10 @@ export const BASE_URL = 'http://localhost:8080'
 // #endif
 
 // #ifdef APP-PLUS
-export const BASE_URL = 'http://127.0.0.1:8080'
+// 这里改成你的Mac局域网IP！！！
+export const BASE_URL = 'http://192.168.3.27:8080'
 // #endif
 
 // #ifdef MP-WEIXIN
-export const BASE_URL = 'http://127.0.0.1:8080'
+export const BASE_URL = 'http://192.168.3.27:8080'
 // #endif

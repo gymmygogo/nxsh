@@ -118,7 +118,7 @@ CREATE TABLE `medicine_plan` (
   `take_time` TIME NOT NULL COMMENT '计划服用时间（如 08:00:00）',
   `frequency_type` INT DEFAULT NULL COMMENT '频次类型',
   `frequency_value` INT DEFAULT NULL COMMENT '频次具体值',
-  `week_days` INT DEFAULT NULL COMMENT '星期具体值',
+  `week_days` VARCHAR(32) DEFAULT NULL COMMENT '星期具体值，支持如 1,3,5',
   `is_deleted` TINYINT(1) DEFAULT 0 COMMENT '逻辑删除标记: 0-未删除, 1-已删除',
   `create_time` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `update_time` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
@@ -203,3 +203,19 @@ CREATE TABLE `emergency_contact` (
   `update_time` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`)
 ) COMMENT='紧急联系人表';
+
+-- --------------------------------------------------------
+-- 12. AI护理对话回复记录表
+-- --------------------------------------------------------
+CREATE TABLE `ai_care_reply` (
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
+  `elderly_id` BIGINT(20) NOT NULL COMMENT '老人ID',
+  `user_text` TEXT DEFAULT NULL COMMENT '老人的输入文本',
+  `ai_text` TEXT DEFAULT NULL COMMENT 'AI生成的回复文本',
+  `ai_voice_url` VARCHAR(255) DEFAULT NULL COMMENT 'AI生成的语音文件URL',
+  `is_deleted` TINYINT(1) DEFAULT 0 COMMENT '逻辑删除标记: 0-未删除, 1-已删除',
+  `create_time` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  PRIMARY KEY (`id`),
+  INDEX `idx_elderly_time` (`elderly_id`, `create_time`)
+) COMMENT='AI护理对话回复记录表';

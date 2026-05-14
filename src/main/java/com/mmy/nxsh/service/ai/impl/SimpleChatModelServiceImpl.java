@@ -1,9 +1,11 @@
 package com.mmy.nxsh.service.ai.impl;
 
-import com.google.gson.Gson;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.mmy.nxsh.entity.AiChatLog;
+import com.mmy.nxsh.mapper.AiChatLogMapper;
 import com.mmy.nxsh.service.ai.ChatModelService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,6 +17,9 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -29,47 +34,64 @@ public class SimpleChatModelServiceImpl implements ChatModelService {
     @Value("${ai.siliconflow.model}")
     private String model;
 
-    private static final String SYSTEM_PROMPT = """
-            你是"暖夕"，一位温暖、耐心、善解人意的AI心理关怀陪伴助手，专门陪伴老年人聊天。
-            请遵循以下原则：
-            1. 用温暖亲切的语气，像晚辈关心长辈一样说话，称呼对方为"您"。
-            2. 回复要简短温馨，每次不超过100字，避免长篇大论，方便老人阅读和收听。
-            3. 积极倾听，多用共情和肯定的话语，让老人感到被理解和关心。
-            4. 如果老人表达孤独、难过等负面情绪，给予安慰和鼓励，但不要说教。
-            5. 适当引导老人回忆美好往事、聊聊日常生活、兴趣爱好等积极话题。
-            6. 绝对不提供任何医疗建议或诊断，如遇健康问题建议咨询医生。
-            7. 保持对话的连贯性和自然感，像朋友聊天一样轻松。
-            """;
+    /**
+     * How many previous turns to load from DB.
+     * A "turn" here equals one row in ai_chat_log (user input + ai response).
+     */
+    @Value("${ai.siliconflow.history-turns:6}")
+    private int historyTurns;
 
-    private static final Gson GSON = new Gson();
+    private final AiChatLogMapper aiChatLogMapper;
+
+    public SimpleChatModelServiceImpl(AiChatLogMapper aiChatLogMapper) {
+        this.aiChatLogMapper = aiChatLogMapper;
+    }
+
+    private static final String SYSTEM_PROMPT = """
+        你的身份是“暖夕”，一个专门陪伴老年人的AI助手。你必须用“我”来自称。
+        
+        重要原则：
+        1. 绝对不要对用户说“您是暖夕”或“你是暖夕”。你的名字就是暖夕。
+        2. 用尊敬和温暖的语气，称呼用户为\"爷爷\"、\"奶奶\"或\"您\"。
+        3. 回复简短（50字以内最好），直接回答问题，语气像家里的晚辈。
+        4. 不要编造任何经历（比如看到了什么风景、去过哪里），你是AI，没有物理身体。
+        5. 不要给确诊性的医疗建议，如果涉及严重健康问题，请温和地建议去看医生。
+        6. 诚实原则：你目前没有联网。如果你不知道答案（比如明天的天气、最新新闻），直接温和地道歉说不知道，绝对不能转移话题或胡乱编造。
+        7. 多听老人说话，偶尔主动问问他们的生活、回忆或身体感觉。
+        """;
 
     @Override
-    public String reply(String userText) {
+    public String reply(Long elderlyId, String userText) {
         if (userText == null || userText.isBlank()) {
             throw new IllegalArgumentException("用户文本不能为空");
         }
 
         try {
-            JsonObject requestBody = buildRequestBody(userText);
+            JsonObject requestBody = buildRequestBody(elderlyId, userText.trim());
             String responseJson = doPost(requestBody.toString());
             return extractReply(responseJson);
         } catch (Exception e) {
             log.error("调用硅基流动AI接口失败", e);
-            return "哎呀，我刚才走神了。您再说一遍好吗？我一直在听着呢。";
+            return "。哎呀，我刚才走神了。您再说一遍好吗？我一直在听着呢。";
         }
     }
 
-    private JsonObject buildRequestBody(String userText) {
+    private JsonObject buildRequestBody(Long elderlyId, String userText) {
+        JsonArray messages = new JsonArray();
+
         JsonObject systemMsg = new JsonObject();
         systemMsg.addProperty("role", "system");
         systemMsg.addProperty("content", SYSTEM_PROMPT);
+        messages.add(systemMsg);
+
+        // Load recent chat memory from DB (if elderlyId is present)
+        for (JsonObject his : buildHistoryMessages(elderlyId)) {
+            messages.add(his);
+        }
 
         JsonObject userMsg = new JsonObject();
         userMsg.addProperty("role", "user");
         userMsg.addProperty("content", userText);
-
-        JsonArray messages = new JsonArray();
-        messages.add(systemMsg);
         messages.add(userMsg);
 
         JsonObject body = new JsonObject();
@@ -78,6 +100,50 @@ public class SimpleChatModelServiceImpl implements ChatModelService {
         body.addProperty("max_tokens", 256);
         body.addProperty("temperature", 0.8);
         return body;
+    }
+
+    /**
+     * Convert last N turns of ai_chat_log into OpenAI-style messages:
+     * user -> assistant -> user -> assistant ...
+     */
+    private List<JsonObject> buildHistoryMessages(Long elderlyId) {
+        if (elderlyId == null || historyTurns <= 0) {
+            return Collections.emptyList();
+        }
+
+        LambdaQueryWrapper<AiChatLog> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(AiChatLog::getElderlyId, elderlyId)
+                .orderByDesc(AiChatLog::getChatTime)
+                .last("LIMIT " + historyTurns);
+
+        List<AiChatLog> logs = aiChatLogMapper.selectList(wrapper);
+        if (logs == null || logs.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        // We queried DESC, but we need chronological order for messages.
+        Collections.reverse(logs);
+
+        List<JsonObject> messages = new ArrayList<>();
+        for (AiChatLog logRow : logs) {
+            // user
+            if (logRow.getUserMessage() != null && !logRow.getUserMessage().isBlank()) {
+                JsonObject u = new JsonObject();
+                u.addProperty("role", "user");
+                u.addProperty("content", logRow.getUserMessage());
+                messages.add(u);
+            }
+
+            // assistant
+            if (logRow.getAiResponse() != null && !logRow.getAiResponse().isBlank()) {
+                JsonObject a = new JsonObject();
+                a.addProperty("role", "assistant");
+                a.addProperty("content", logRow.getAiResponse());
+                messages.add(a);
+            }
+        }
+
+        return messages;
     }
 
     private String doPost(String jsonBody) throws Exception {

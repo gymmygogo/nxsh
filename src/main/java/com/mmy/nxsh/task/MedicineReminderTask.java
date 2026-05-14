@@ -1,10 +1,8 @@
 package com.mmy.nxsh.task;
 
 import com.mmy.nxsh.entity.FamilyElderlyBind;
-import com.mmy.nxsh.entity.MedicineInfo;
 import com.mmy.nxsh.entity.UserElderly;
 import com.mmy.nxsh.mapper.FamilyElderlyBindMapper;
-import com.mmy.nxsh.mapper.MedicineInfoMapper;
 import com.mmy.nxsh.mapper.UserElderlyMapper;
 import com.mmy.nxsh.service.MedicineService;
 import com.mmy.nxsh.websocket.ElderlyWebSocketServer;
@@ -12,29 +10,29 @@ import com.mmy.nxsh.websocket.FamilyWebSocketServer;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Component
 public class MedicineReminderTask {
 
+    @Value("${nxsh.tasks.medicine-reminder.enabled:false}")
+    private boolean enabled;
+
     private final MedicineService medicineService;
     private final UserElderlyMapper userElderlyMapper;
     private final FamilyElderlyBindMapper familyElderlyBindMapper;
-    private final MedicineInfoMapper medicineInfoMapper;
 
     public MedicineReminderTask(MedicineService medicineService,
                                UserElderlyMapper userElderlyMapper,
-                               FamilyElderlyBindMapper familyElderlyBindMapper,
-                               MedicineInfoMapper medicineInfoMapper) {
+                               FamilyElderlyBindMapper familyElderlyBindMapper) {
         this.medicineService = medicineService;
         this.userElderlyMapper = userElderlyMapper;
         this.familyElderlyBindMapper = familyElderlyBindMapper;
-        this.medicineInfoMapper = medicineInfoMapper;
     }
 
     /**
@@ -42,9 +40,13 @@ public class MedicineReminderTask {
      */
     @Scheduled(cron = "0 * * * * ?") // 每分钟执行一次
     public void checkMedicineReminders() {
+        if (!enabled) {
+            return;
+        }
+
         // 获取当前时间
         LocalDateTime now = LocalDateTime.now();
-        
+
         // 检查是否在免打扰时段（22:00-06:00）
         if (isInQuietHours(now)) {
             return;
@@ -59,7 +61,7 @@ public class MedicineReminderTask {
         for (UserElderly elder : elders) {
             // 检查当前时间是否有待服用的药物
             List<com.mmy.nxsh.controller.dto.DueMedicineGroupDTO> dueMedicines = 
-                medicineService.getDueMedicines(elder.getId(), now);
+                medicineService.getDueMedicines(elder.getId(), now, 0);
             
             if (!dueMedicines.isEmpty()) {
                 // 向老人推送用药提醒

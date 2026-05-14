@@ -383,7 +383,7 @@ const loadBindInfo = () => {
         if (d.bound) {
           loadElderlyProfile()
           loadBloodData()
-          loadBpRemindConfigs()
+          // loadBpRemindConfigs() // 血压提醒由后端 WebSocket 推送，不需要轮询查询
         }
       }
     }

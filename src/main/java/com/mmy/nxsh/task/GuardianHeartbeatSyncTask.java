@@ -5,6 +5,7 @@ import com.mmy.nxsh.entity.UserElderly;
 import com.mmy.nxsh.mapper.UserElderlyMapper;
 import com.mmy.nxsh.service.impl.ElderlyServiceImpl;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -12,12 +13,14 @@ import org.springframework.stereotype.Component;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.List;
 import java.util.Set;
 
 @Slf4j
 @Component
 public class GuardianHeartbeatSyncTask {
+
+    @Value("${nxsh.tasks.guardian-heartbeat-sync.enabled:false}")
+    private boolean enabled;
 
     private final StringRedisTemplate stringRedisTemplate;
     private final UserElderlyMapper userElderlyMapper;
@@ -33,6 +36,10 @@ public class GuardianHeartbeatSyncTask {
      */
     @Scheduled(cron = "0 */5 * * * ?")
     public void syncHeartbeatToMySQL() {
+        if (!enabled) {
+            return;
+        }
+
         Set<String> keys = stringRedisTemplate.keys(ElderlyServiceImpl.HEARTBEAT_PREFIX + "*");
         if (keys == null || keys.isEmpty()) {
             return;

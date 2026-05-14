@@ -1,5 +1,6 @@
 server:
   port: 8080
+  address: 0.0.0.0
 
 spring:
   application:
@@ -33,7 +34,7 @@ mybatis-plus:
 
 minio:
   endpoint: http://localhost:9004        # Java 后端连接 MinIO 用（本机 Docker）
-  external-url: http://192.168.5.26:9004 # 生成的文件 URL 前缀（真机访问用局域网 IP）
+  external-url: http://192.168.3.27:9004 # 生成的文件 URL 前缀（真机访问用局域网 IP）
   access-key: minioadmin
   secret-key: minioadmin
   bucket: nxsh
@@ -50,13 +51,30 @@ sms:
 
 ai:
   siliconflow:
-    api-key: sk-cgzbthstvtcchfkcjmdglnanmgnckzsnvtrrlhooiqczwfxv
+#    文本生成/对话模型）
+    api-key: sk-ibkielkbojlygvpfxiuhrmkopcrydfromdkebqxrneankurh
     api-url: https://api.siliconflow.cn/v1/chat/completions
-    model: Qwen/Qwen3-235B-A22B-Instruct-2507
-    stt-api-key: sk-cgzbthstvtcchfkcjmdglnanmgnckzsnvtrrlhooiqczwfxv
+    model: Qwen/Qwen3-8B
+#    语音转文本模型
+    stt-api-key: sk-ibkielkbojlygvpfxiuhrmkopcrydfromdkebqxrneankurh
     stt-api-url: https://api.siliconflow.cn/v1/audio/transcriptions
-    stt-model: FunAudioLLM/SenseVoiceSmall
-    tts-api-key: sk-cgzbthstvtcchfkcjmdglnanmgnckzsnvtrrlhooiqczwfxv
+    stt-model: TeleAI/TeleSpeechASR
+#    文本转语音模型
+    tts-api-key: sk-ibkielkbojlygvpfxiuhrmkopcrydfromdkebqxrneankurh
     tts-api-url: https://api.siliconflow.cn/v1/audio/speech
-    tts-model: fnlp/MOSS-TTSD-v0.5
-    tts-voice: fnlp/MOSS-TTSD-v0.5:anna
+    tts-model: FunAudioLLM/CosyVoice2-0.5B
+    tts-voice: FunAudioLLM/CosyVoice2-0.5B:bella
+
+# 定时任务开关（默认关闭，避免开发环境产生无意义轮询与 SQL 日志）
+nxsh:
+  tasks:
+    blood-pressure-reminder:
+      enabled: false
+    medicine-reminder:
+      enabled: false
+    guardian-alert:
+      enabled: false
+    guardian-heartbeat-sync:
+      enabled: false
+    location-data-cleanup:
+      enabled: false

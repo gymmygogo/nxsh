@@ -12,6 +12,7 @@ import com.mmy.nxsh.mapper.UserElderlyMapper;
 import com.mmy.nxsh.websocket.ElderlyWebSocketServer;
 import com.mmy.nxsh.websocket.FamilyWebSocketServer;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -21,6 +22,9 @@ import java.util.List;
 @Slf4j
 @Component
 public class BloodPressureReminderTask {
+
+    @Value("${nxsh.tasks.blood-pressure-reminder.enabled:false}")
+    private boolean enabled;
 
     private final HealthRemindConfigMapper healthRemindConfigMapper;
     private final UserElderlyMapper userElderlyMapper;
@@ -39,6 +43,10 @@ public class BloodPressureReminderTask {
      */
     @Scheduled(cron = "0 * * * * ?")
     public void checkBloodPressureReminders() {
+        if (!enabled) {
+            return;
+        }
+
         LocalTime now = LocalTime.now().withSecond(0).withNano(0);
 
         // 查询当前分钟匹配的、已激活的血压提醒配置

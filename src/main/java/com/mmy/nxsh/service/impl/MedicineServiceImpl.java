@@ -26,11 +26,11 @@ import org.springframework.web.multipart.MultipartFile;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -59,20 +59,27 @@ public class MedicineServiceImpl extends ServiceImpl<MedicineInfoMapper, Medicin
     }
 
     @Override
-    public List<DueMedicineGroupDTO> getDueMedicines(Long elderlyId, LocalDateTime time) {
-        LocalTime targetTime = time.toLocalTime();
+    public List<DueMedicineGroupDTO> getDueMedicines(Long elderlyId, LocalDateTime time, Integer windowMinutes) {
+        LocalTime targetTime = time.toLocalTime().truncatedTo(ChronoUnit.MINUTES);
         LocalDate today = time.toLocalDate();
+        int window = windowMinutes == null ? 0 : Math.max(windowMinutes, 0);
 
         LambdaQueryWrapper<MedicinePlan> planWrapper = new LambdaQueryWrapper<>();
-        planWrapper.eq(MedicinePlan::getElderlyId, elderlyId)
-                .eq(MedicinePlan::getTakeTime, targetTime);
+        planWrapper.eq(MedicinePlan::getElderlyId, elderlyId);
         List<MedicinePlan> plans = medicinePlanMapper.selectList(planWrapper);
         if (plans.isEmpty()) {
             return new ArrayList<>();
         }
 
+        List<MedicinePlan> timeMatchedPlans = plans.stream()
+                .filter(plan -> isPlanInTimeWindow(plan.getTakeTime(), targetTime, window))
+                .collect(Collectors.toList());
+        if (timeMatchedPlans.isEmpty()) {
+            return new ArrayList<>();
+        }
+
         // 过滤出符合周期条件的计划
-        List<MedicinePlan> filteredPlans = plans.stream()
+        List<MedicinePlan> filteredPlans = timeMatchedPlans.stream()
                 .filter(plan -> isPlanActiveOnDate(plan, today))
                 .collect(Collectors.toList());
         
@@ -125,6 +132,22 @@ public class MedicineServiceImpl extends ServiceImpl<MedicineInfoMapper, Medicin
         }
         result.sort((a, b) -> a.getPlanTime().compareTo(b.getPlanTime()));
         return result;
+    }
+
+    private boolean isPlanInTimeWindow(LocalTime planTime, LocalTime targetTime, int windowMinutes) {
+        if (planTime == null) {
+            return false;
+        }
+        int planMinutes = planTime.getHour() * 60 + planTime.getMinute();
+        int targetMinutes = targetTime.getHour() * 60 + targetTime.getMinute();
+        if (windowMinutes <= 0) {
+            return planMinutes == targetMinutes;
+        }
+        int endMinutes = targetMinutes + windowMinutes;
+        if (endMinutes < 1440) {
+            return planMinutes >= targetMinutes && planMinutes <= endMinutes;
+        }
+        return planMinutes >= targetMinutes || planMinutes <= (endMinutes - 1440);
     }
     
     /**
@@ -299,6 +322,14 @@ public class MedicineServiceImpl extends ServiceImpl<MedicineInfoMapper, Medicin
         }
         if (req.getFrequencyType() == null) {
             req.setFrequencyType("daily");
+        }
+        if ("weekly".equalsIgnoreCase(req.getFrequencyType())
+                && (req.getWeekDays() == null || req.getWeekDays().trim().isEmpty())
+                && req.getFrequencyValue() != null
+                && req.getFrequencyValue() >= 1
+                && req.getFrequencyValue() <= 7) {
+            // 兼容前端只传 frequencyValue 未传 weekDays 的情况
+            req.setWeekDays(String.valueOf(req.getFrequencyValue()));
         }
 
         MedicineInfo info = new MedicineInfo();

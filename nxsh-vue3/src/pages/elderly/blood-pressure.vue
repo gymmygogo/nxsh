@@ -434,6 +434,11 @@ const formatDateTime = (d) => {
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`
 }
 
+const formatLocalDateTimeForApi = (d = new Date()) => {
+  const pad = (n) => String(n).padStart(2, '0')
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`
+}
+
 const tabClass = (key) => (activeTab.value === key ? 'tab-active' : '')
 
 const setTab = (key) => {
@@ -490,7 +495,7 @@ const recordToServer = (payload) => {
   uni.request({
     // 注意：因为不用封装的请求了，这里需要写全完整的后端地址。
     // 如果你是在手机上扫码测试，请把 localhost 换成你的电脑局域网 IP (如 192.168.x.x)
-    url: 'http://localhost:8080/api/health/record',
+    url: 'http://192.168.3.27:8080/api/health/record',
 
     // 原生方法绝对会乖乖听话，使用 POST
     method: 'POST',
@@ -571,13 +576,16 @@ const loadDueMedicines = () => {
     return
   }
 
+  const queryTime = formatLocalDateTimeForApi(new Date())
   request({
     url: '/medicine/due',
     method: 'GET',
-    data: { elderlyId: Number(elderlyId), time: new Date().toISOString() },
+    // 刷新提醒时查询“整天”计划，避免因为当前时刻不在服药点而误判为空
+    data: { elderlyId: Number(elderlyId), time: queryTime, windowMinutes: 1439 },
     success: (res) => {
       if (res.statusCode === 200 && res.data && res.data.code === 200) {
         dueGroups.value = res.data.data || []
+        console.log('[medicine due] query=', { elderlyId: Number(elderlyId), time: queryTime, windowMinutes: 1439 }, 'result=', res.data.data)
       }
     }
   })

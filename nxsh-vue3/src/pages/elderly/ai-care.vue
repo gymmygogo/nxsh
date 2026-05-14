@@ -20,7 +20,7 @@
         <view v-if="msg.role === 'ai'" class="avatar avatar-ai"><text class="avatar-letter">伴</text></view>
         <view class="bubble" :class="msg.role === 'user' ? 'bubble-user' : 'bubble-ai'">
           <text v-if="msg.text" class="bubble-text">{{ msg.text }}</text>
-          <text v-else class="bubble-text">[语音消息]</text>
+          <text v-else class="bubble-text">{{ msg.placeholder || '[语音消息]' }}</text>
         </view>
         <view v-if="msg.role === 'user'" class="avatar avatar-user"><text class="avatar-letter">我</text></view>
       </view>
@@ -114,9 +114,11 @@ const handleRecordResult = (blob, filePath) => {
     return
   }
 
+  // 先插入一条“语音占位消息”，后续接口成功后再把 text 回填成识别文字
+  const voiceMsg = addUserVoiceMsg(filePath || '[语音]')
+
   if (blob) {
     // H5 模式：用 XMLHttpRequest 上传 Blob
-    addUserVoiceMsg('[语音]')
     const formData = new FormData()
     formData.append('voiceFile', blob, 'voice.webm')
     formData.append('elderlyId', Number(elderlyId))
@@ -131,23 +133,28 @@ const handleRecordResult = (blob, filePath) => {
       try {
         const data = JSON.parse(xhr.responseText)
         if (data.code === 200 && data.data) {
+          // 回填语音识别文本，让页面看到老人说了什么
+          if (data.data.userText) patchMsgText(voiceMsg.id, data.data.userText)
+
           addAiMsg({ aiText: data.data.aiText, aiVoiceUrl: data.data.aiVoiceUrl })
           if (data.data.aiVoiceUrl) playAudio(data.data.aiVoiceUrl)
         } else {
+          patchMsgPlaceholder(voiceMsg.id, '[语音消息]')
           uni.showToast({ title: data.message || '回复失败', icon: 'none' })
         }
       } catch (e) {
+        patchMsgPlaceholder(voiceMsg.id, '[语音消息]')
         uni.showToast({ title: '解析失败', icon: 'none' })
       }
     }
     xhr.onerror = () => {
       thinking.value = false
+      patchMsgPlaceholder(voiceMsg.id, '[语音消息]')
       uni.showToast({ title: '上传失败', icon: 'none' })
     }
     xhr.send(formData)
   } else if (filePath) {
     // App 模式：用 uni.uploadFile 上传本地文件
-    addUserVoiceMsg(filePath)
     uploadFile({
       url: '/ai/care/chat/voice',
       filePath,
@@ -158,17 +165,22 @@ const handleRecordResult = (blob, filePath) => {
         try {
           const data = JSON.parse(uploadRes.data)
           if (data.code === 200 && data.data) {
+            if (data.data.userText) patchMsgText(voiceMsg.id, data.data.userText)
+
             addAiMsg({ aiText: data.data.aiText, aiVoiceUrl: data.data.aiVoiceUrl })
             if (data.data.aiVoiceUrl) playAudio(data.data.aiVoiceUrl)
           } else {
+            patchMsgPlaceholder(voiceMsg.id, '[语音消息]')
             uni.showToast({ title: data.message || '回复失败', icon: 'none' })
           }
         } catch (e) {
+          patchMsgPlaceholder(voiceMsg.id, '[语音消息]')
           uni.showToast({ title: '解析失败', icon: 'none' })
         }
       },
       fail: () => {
         thinking.value = false
+        patchMsgPlaceholder(voiceMsg.id, '[语音消息]')
         uni.showToast({ title: '上传失败', icon: 'none' })
       }
     })
@@ -258,12 +270,31 @@ const addUserTextMsg = (text) => {
 }
 
 const addUserVoiceMsg = (filePath) => {
-  messages.value.push({
+  const msg = {
     id: String(Date.now()) + '_uv',
     role: 'user',
     text: '',
+    placeholder: '识别中…',
     voiceUrl: filePath
-  })
+  }
+  messages.value.push(msg)
+  scrollToBottom()
+  return msg
+}
+
+const patchMsgText = (msgId, text) => {
+  const m = messages.value.find((x) => x.id === msgId)
+  if (!m) return
+  m.text = String(text || '').trim()
+  m.placeholder = ''
+  scrollToBottom()
+}
+
+const patchMsgPlaceholder = (msgId, placeholder) => {
+  const m = messages.value.find((x) => x.id === msgId)
+  if (!m) return
+  m.placeholder = placeholder
+  scrollToBottom()
 }
 
 const addAiMsg = ({ aiText, aiVoiceUrl }) => {
